@@ -1,0 +1,57 @@
+# GitHub Actions — Auto Deploy to Vercel
+#
+# This workflow runs on every push to main branch and automatically
+# deploys your blog to Vercel (free forever for personal projects).
+#
+# PREREQUISITE: Connect your GitHub repo to Vercel at https://vercel.com/new
+# Vercel will auto-detect Next.js and configure everything.
+# No VERCEL_TOKEN is needed — Vercel handles it via GitHub integration.
+
+name: Deploy Blog
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  validate:
+    name: Validate Posts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Check vault posts
+        run: bun run preview:check
+
+  # Vercel auto-deploys from GitHub — this job is for CI validation only.
+  # The actual deployment happens automatically when you push to main.
+  # Vercel's GitHub integration handles:
+  #   - Building the Next.js app
+  #   - Deploying to their CDN
+  #   - Preview deployments for PRs
+  #   - Rollback on failure
+  # All for FREE on the Hobby plan (no credit card required).
+
+  lint:
+    name: Lint Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run linter
+        run: bun run lint
