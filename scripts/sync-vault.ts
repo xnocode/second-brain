@@ -292,29 +292,10 @@ function main() {
   }
 
   if (!fs.existsSync(blogDir)) {
-    console.log("");
-    console.log("═══════════════════════════════════════════════════════");
-    console.log("  🧠 Second Brain — Blog Sync");
-    console.log("═══════════════════════════════════════════════════════");
-    console.log("");
-    console.log(`  ❌ Blog folder not found: ${blogDir}`);
-    console.log("");
-    console.log("  Create it and add your first post:");
-    console.log("");
-    console.log(`    mkdir -p ${path.relative(PROJECT_ROOT, blogDir)}`);
-    console.log("");
-    console.log("  Then add .md files with frontmatter:");
-    console.log("");
-    console.log('    ---');
-    console.log('    title: "My First Post"');
-    console.log("    date: 2025-06-28");
-    console.log('    tags: ["hello", "world"]');
-    console.log("    draft: false");
-    console.log('    ---');
-    console.log("");
-    console.log("  Your post content here...");
-    console.log("");
-    process.exit(1);
+    // On Vercel/CI the blog/ vault doesn't exist — posts are already in content/posts/
+    // from a previous local sync + git push. Just skip silently.
+    console.log("  ℹ️  Blog folder not found — skipping vault sync (content/posts/ already up to date from git)");
+    process.exit(0);
   }
 
   console.log("");
