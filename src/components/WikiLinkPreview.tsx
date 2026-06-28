@@ -31,6 +31,40 @@ export function WikiLinkPreview({ containerRef, onNavigate }: WikiLinkPreviewPro
   const previewBoxRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
+  const updatePosition = useCallback(
+    (anchorEl: HTMLElement) => {
+      const box = previewBoxRef.current;
+      if (!box) return;
+
+      const rect = anchorEl.getBoundingClientRect();
+      const boxWidth = 420;
+      const boxMaxHeight = 480;
+      const gap = 10;
+
+      // Horizontal: prefer right side of the link
+      let left = rect.right + gap;
+      let top = rect.top;
+
+      // If overflows right, try left side
+      if (left + boxWidth > window.innerWidth - 16) {
+        left = rect.left - boxWidth - gap;
+      }
+      // If still overflows, center under the link
+      if (left < 16) {
+        left = Math.max(16, rect.left + rect.width / 2 - boxWidth / 2);
+      }
+
+      // Vertical: try below, then above
+      if (top + boxMaxHeight > window.innerHeight - 16) {
+        top = Math.max(16, window.innerHeight - boxMaxHeight - 16);
+      }
+      if (top < 16) top = 16;
+
+      setPosition({ top, left });
+    },
+    []
+  );
+
   const hidePreview = useCallback(() => {
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
@@ -83,41 +117,7 @@ export function WikiLinkPreview({ containerRef, onNavigate }: WikiLinkPreviewPro
         }
       }
     },
-    [preview]
-  );
-
-  const updatePosition = useCallback(
-    (anchorEl: HTMLElement) => {
-      const box = previewBoxRef.current;
-      if (!box) return;
-
-      const rect = anchorEl.getBoundingClientRect();
-      const boxWidth = 420;
-      const boxMaxHeight = 480;
-      const gap = 10;
-
-      // Horizontal: prefer right side of the link
-      let left = rect.right + gap;
-      let top = rect.top;
-
-      // If overflows right, try left side
-      if (left + boxWidth > window.innerWidth - 16) {
-        left = rect.left - boxWidth - gap;
-      }
-      // If still overflows, center under the link
-      if (left < 16) {
-        left = Math.max(16, rect.left + rect.width / 2 - boxWidth / 2);
-      }
-
-      // Vertical: try below, then above
-      if (top + boxMaxHeight > window.innerHeight - 16) {
-        top = Math.max(16, window.innerHeight - boxMaxHeight - 16);
-      }
-      if (top < 16) top = 16;
-
-      setPosition({ top, left });
-    },
-    []
+    [preview, updatePosition]
   );
 
   useEffect(() => {

@@ -89,7 +89,6 @@ const DEFAULT_COLOR = { bg: "rgba(161,161,170,0.12)", text: "#a1a1aa", border: "
 /*  Pyodide (Python in Browser with input() support)                   */
 /* ------------------------------------------------------------------ */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const globalThis: any;
 
 interface PyodideInstance {

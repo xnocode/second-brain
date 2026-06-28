@@ -75,69 +75,69 @@ export default function HomePage() {
   const [focusedPostIndex, setFocusedPostIndex] = useState(-1);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeTag, setActiveTag] = useState<string | null>(null);
-  const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
+  // filteredPosts is derived — computed via useMemo below
   const [postDetail, setPostDetail] = useState<PostDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
-  const [bookmarkSlugs, setBookmarkSlugs] = useState<string[]>([]);
+  const [bookmarkSlugs, setBookmarkSlugs] = useState<string[]>(() => getBookmarks());
   const [readingStreak, setReadingStreak] = useState(0);
   const [totalRead, setTotalRead] = useState(0);
 
   /* ---------- fetch site data ---------- */
-  const fetchSiteData = useCallback(async () => {
-    try {
-      const [postsRes, catsRes, tagsRes, tagsCloudRes] = await Promise.all([
-        fetch("/api/posts"),
-        fetch("/api/categories"),
-        fetch("/api/tags"),
-        fetch("/api/tags-cloud"),
-      ]);
-      const postsData = await postsRes.json();
-      const catsData = await catsRes.json();
-      const tagsData = await tagsRes.json();
-      const tagsCloudData = await tagsCloudRes.json();
-
-      const posts: BlogPost[] = (postsData.posts || []).map(
-        (p: Record<string, unknown>) => ({
-          slug: p.slug as string,
-          title: p.title as string,
-          date: p.date as string,
-          excerpt: p.excerpt as string,
-          tags: (p.tags as string[]) || [],
-          category: (p.category as string) || "Uncategorized",
-          readingTime: p.readingTime as string,
-          cover: p.cover as string | undefined,
-        })
-      );
-
-      const categories: { name: string; count: number }[] = (
-        catsData.categories || []
-      ).map((c: Record<string, unknown>) => ({
-        name: c.category as string,
-        count: c.count as number,
-      }));
-
-      const tags: { tag: string; count: number }[] =
-        tagsData.tags || [];
-
-      setData({
-        postCount: posts.length,
-        categoryCount: categories.length,
-        tagCount: tags.length,
-        posts,
-        categories,
-        tags: tagsCloudData.tags || [],
-      });
-      setFilteredPosts(posts);
-    } catch (err) {
-      console.error("Failed to fetch site data:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    fetchSiteData();
-  }, [fetchSiteData]);
+    let cancelled = false;
+    (async () => {
+      try {
+        const [postsRes, catsRes, tagsRes, tagsCloudRes] = await Promise.all([
+          fetch("/api/posts"),
+          fetch("/api/categories"),
+          fetch("/api/tags"),
+          fetch("/api/tags-cloud"),
+        ]);
+        const postsData = await postsRes.json();
+        const catsData = await catsRes.json();
+        const tagsData = await tagsRes.json();
+        const tagsCloudData = await tagsCloudRes.json();
+
+        const posts: BlogPost[] = (postsData.posts || []).map(
+          (p: Record<string, unknown>) => ({
+            slug: p.slug as string,
+            title: p.title as string,
+            date: p.date as string,
+            excerpt: p.excerpt as string,
+            tags: (p.tags as string[]) || [],
+            category: (p.category as string) || "Uncategorized",
+            readingTime: p.readingTime as string,
+            cover: p.cover as string | undefined,
+          })
+        );
+
+        const categories: { name: string; count: number }[] = (
+          catsData.categories || []
+        ).map((c: Record<string, unknown>) => ({
+          name: c.category as string,
+          count: c.count as number,
+        }));
+
+        const tags: { tag: string; count: number }[] =
+          tagsData.tags || [];
+
+        if (cancelled) return;
+        setData({
+          postCount: posts.length,
+          categoryCount: categories.length,
+          tagCount: tags.length,
+          posts,
+          categories,
+          tags: tagsCloudData.tags || [],
+        });
+      } catch (err) {
+        console.error("Failed to fetch site data:", err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   /* ---------- navigation ---------- */
   const navigate = useCallback((target: string) => {
@@ -183,33 +183,28 @@ export default function HomePage() {
   }, []);
 
   /* ---------- category filter ---------- */
-  useEffect(() => {
-    if (!data) return;
+  const filteredPosts = useMemo(() => {
+    if (!data) return [];
     if (activeCategory === null) {
-      setFilteredPosts(data.posts);
-    } else {
-      setFilteredPosts(
-        data.posts.filter((p) => p.category === activeCategory)
-      );
+      if (activeTag) {
+        return data.posts.filter((p) =>
+          p.tags.some((t) => t.toLowerCase() === activeTag.toLowerCase())
+        );
+      }
+      return data.posts;
     }
-  }, [activeCategory, data]);
+    return data.posts.filter((p) => p.category === activeCategory);
+  }, [data, activeCategory, activeTag]);
 
   /* ---------- tag click from article ---------- */
   const handleTagClick = useCallback(
     (tag: string) => {
       setActiveTag(tag);
       setActiveCategory(null);
-      if (data) {
-        setFilteredPosts(
-          data.posts.filter((p) =>
-            p.tags.some((t) => t.toLowerCase() === tag.toLowerCase())
-          )
-        );
-      }
       setPage({ view: "blog" });
       window.scrollTo({ top: 0, behavior: "smooth" });
     },
-    [data]
+    []
   );
 
   /* ---------- bookmarks sync ---------- */
@@ -228,16 +223,13 @@ export default function HomePage() {
   }, [postSlugs]);
 
   /* ---------- recently read ---------- */
-  const [recentReadSlugs, setRecentReadSlugs] = useState<string[]>([]);
+  const [recentReadSlugs, setRecentReadSlugs] = useState<string[]>(() => getRecentlyReadSlugs(5));
 
   const refreshRecentRead = useCallback(() => {
     setRecentReadSlugs(getRecentlyReadSlugs(5));
   }, []);
 
   useEffect(() => {
-    refreshBookmarks();
-    refreshReadingStats();
-    refreshRecentRead();
     const onBookmarksChanged = () => refreshBookmarks();
     const onHistoryChanged = () => {
       refreshReadingStats();
@@ -429,17 +421,9 @@ export default function HomePage() {
                       <TagCloud
                         tags={data.tags.slice(0, 8)}
                         onTagClick={(tag) => {
+                          setActiveCategory(null);
+                          setActiveTag(tag);
                           navigate("blog");
-                          setTimeout(() => {
-                            setActiveCategory(null);
-                            setFilteredPosts(
-                              data.posts.filter((p) =>
-                                p.tags.some(
-                                  (t) => t.toLowerCase() === tag.toLowerCase()
-                                )
-                              )
-                            );
-                          }, 0);
                         }}
                       />
                     </section>
