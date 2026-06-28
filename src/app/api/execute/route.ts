@@ -26,52 +26,149 @@ function normalizeLang(lang: string): string {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Remote Execution APIs (fallbacks for live/production)              */
+/*  Judge0 CE — Public instance (free, NO auth required)               */
+/*  https://ce.judge0.com — community-hosted, supports all major      */
+/*  compiled and interpreted languages                                 */
 /* ------------------------------------------------------------------ */
 
-// Multiple Piston-compatible API endpoints to try
-const PISTON_ENDPOINTS = [
-  "https://emkc.org/api/v2/piston/execute",
-  "https://piston.code-forge.org/api/v2/execute",
-];
-
-// Default runtime versions for Piston-compatible APIs
-const PISTON_DEFAULTS: Record<string, { language: string; version: string }> = {
-  python:  { language: "python",  version: "3.10.0" },
-  bash:    { language: "bash",    version: "5.1.0" },
-  ruby:    { language: "ruby",    version: "3.2.0" },
-  java:    { language: "java",    version: "15.0.2" },
-  c:       { language: "c",       version: "10.2.0" },
-  cpp:     { language: "c++",     version: "10.2.0" },
-  rust:    { language: "rust",    version: "1.68.2" },
-  go:      { language: "go",      version: "1.19.0" },
-  php:     { language: "php",     version: "8.2.3" },
-  kotlin:  { language: "kotlin",  version: "1.8.0" },
-  swift:   { language: "swift",   version: "5.5.3" },
-  lua:     { language: "lua",     version: "5.4.4" },
-  r:       { language: "r",       version: "4.2.0" },
-  scala:   { language: "scala",   version: "3.2.2" },
+const JUDGE0_LANG_IDS: Record<string, number> = {
+  bash: 46, sh: 46,
+  c: 50,
+  cpp: 54, "c++": 54,
+  java: 62,
+  ruby: 72,
+  rust: 73,
+  go: 60, golang: 60,
+  swift: 83,
+  kotlin: 78,
+  scala: 81,
+  lua: 82,
+  r: 80,
+  php: 68,
 };
 
-// Glot.io API — free, no auth, supports many languages
-const GLOT_LANG_MAP: Record<string, { language: string; version: string }> = {
-  python: { language: "python", version: "3.10.0" },
-  ruby:   { language: "ruby",   version: "3.2.0" },
-  java:   { language: "java",   version: "15.0.2" },
-  c:      { language: "c",      version: "10.2.0" },
-  cpp:    { language: "c++",    version: "10.2.0" },
-  rust:   { language: "rust",   version: "1.68.2" },
-  go:     { language: "go",     version: "1.19.0" },
-  php:    { language: "php",    version: "8.2.3" },
-  lua:    { language: "lua",    version: "5.4.4" },
-  r:      { language: "r",      version: "4.2.0" },
-  scala:  { language: "scala",  version: "3.2.2" },
-  bash:   { language: "bash",   version: "5.1.0" },
-  kotlin: { language: "kotlin", version: "1.8.0" },
-  swift:  { language: "swift",  version: "5.5.3" },
-};
+const JUDGE0_PUBLIC_URL = "https://ce.judge0.com";
 
-async function executeViaLocalRunner(code: string, language: string, stdin?: string) {
+async function executeViaJudge0Public(
+  code: string,
+  language: string,
+  stdin?: string,
+): Promise<{ output: string; error: string | null; exitCode: number } | null> {
+  const langId = JUDGE0_LANG_IDS[language];
+  if (!langId) return null;
+
+  try {
+    const submitRes = await fetch(
+      `${JUDGE0_PUBLIC_URL}/submissions?base64_encoded=false&wait=true&fields=stdout,stderr,exit_code,compile_output,status`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source_code: code,
+          language_id: langId,
+          stdin: stdin || "",
+        }),
+        signal: AbortSignal.timeout(25000),
+      },
+    );
+
+    if (!submitRes.ok) return null;
+
+    const data = await submitRes.json();
+
+    const stdout = data.stdout || "";
+    const stderr = data.stderr || "";
+    const compileOutput = data.compile_output || "";
+    const statusId = data.status?.id;
+
+    // Status IDs: 3 = Accepted, 4 = Wrong Answer, 5 = Time Limit, 6 = Compilation Error, etc.
+    const isAccepted = statusId === 3 || statusId === 4;
+    const isCompError = statusId === 6;
+    const hasError = isCompError || !!stderr || (statusId && statusId > 4);
+
+    return {
+      output: stdout.trimEnd(),
+      error: hasError
+        ? (isCompError ? compileOutput.trimEnd() : stderr.trimEnd()) || `Judge0 status: ${data.status?.description || statusId}`
+        : null,
+      exitCode: isAccepted ? (data.exit_code ?? 0) : 1,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Judge0 CE — RapidAPI (more reliable, needs JUDGE0_API_KEY)         */
+/*  Falls back to this if public instance is down                      */
+/* ------------------------------------------------------------------ */
+
+const JUDGE0_RAPID_HOST = process.env.JUDGE0_HOST || "https://judge0-ce.p.rapidapi.com";
+
+async function executeViaJudge0RapidAPI(
+  code: string,
+  language: string,
+  stdin?: string,
+): Promise<{ output: string; error: string | null; exitCode: number } | null> {
+  const apiKey = process.env.JUDGE0_API_KEY;
+  if (!apiKey) return null;
+
+  const langId = JUDGE0_LANG_IDS[language];
+  if (!langId) return null;
+
+  try {
+    const submitRes = await fetch(
+      `${JUDGE0_RAPID_HOST}/submissions?base64_encoded=false&wait=true&fields=stdout,stderr,exit_code,compile_output,status,token`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-RapidAPI-Key": apiKey,
+          "X-RapidAPI-Host": new URL(JUDGE0_RAPID_HOST).host,
+        },
+        body: JSON.stringify({
+          source_code: code,
+          language_id: langId,
+          stdin: stdin || "",
+        }),
+        signal: AbortSignal.timeout(25000),
+      },
+    );
+
+    if (!submitRes.ok) return null;
+
+    const data = await submitRes.json();
+
+    const stdout = data.stdout || "";
+    const stderr = data.stderr || "";
+    const compileOutput = data.compile_output || "";
+    const statusId = data.status?.id;
+
+    const isAccepted = statusId === 3 || statusId === 4;
+    const isCompError = statusId === 6;
+    const hasError = isCompError || !!stderr || (statusId && statusId > 4);
+
+    return {
+      output: stdout.trimEnd(),
+      error: hasError
+        ? (isCompError ? compileOutput.trimEnd() : stderr.trimEnd()) || `Judge0 status: ${data.status?.description || statusId}`
+        : null,
+      exitCode: isAccepted ? (data.exit_code ?? 0) : 1,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Local code-runner (development only)                                */
+/* ------------------------------------------------------------------ */
+
+async function executeViaLocalRunner(
+  code: string,
+  language: string,
+  stdin?: string,
+) {
   try {
     const res = await fetch(CODE_RUNNER_URL, {
       method: "POST",
@@ -83,79 +180,6 @@ async function executeViaLocalRunner(code: string, language: string, stdin?: str
     return { ok: true, data };
   } catch {
     return { ok: false, data: null };
-  }
-}
-
-async function executeViaPiston(code: string, language: string, stdin?: string) {
-  const runtime = PISTON_DEFAULTS[language];
-  if (!runtime) return null;
-
-  const body: Record<string, unknown> = {
-    language: runtime.language,
-    version: runtime.version,
-    files: [{ content: code }],
-  };
-  if (stdin && stdin.trim()) body.stdin = stdin;
-
-  // Try each Piston endpoint
-  for (const url of PISTON_ENDPOINTS) {
-    try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-        signal: AbortSignal.timeout(15000),
-      });
-
-      if (res.status === 401 || res.status === 403) continue; // Auth required, try next
-
-      if (!res.ok) continue;
-
-      const data = await res.json();
-      return {
-        output: data.run?.stdout || "",
-        error: data.run?.stderr || null,
-        exitCode: data.run?.code ?? (data.run?.signal ? -1 : 0),
-      };
-    } catch {
-      continue; // Network error, try next
-    }
-  }
-
-  return null;
-}
-
-async function executeViaGlot(code: string, language: string, stdin?: string) {
-  const runtime = GLOT_LANG_MAP[language];
-  if (!runtime) return null;
-
-  try {
-    const res = await fetch(
-      `https://api.glot.io/languages/${runtime.language}/${runtime.version}/run`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Token ${process.env.GLOT_API_KEY || ""}`,
-        },
-        body: JSON.stringify({
-          files: [{ name: "main", content: code }],
-          stdin: stdin || "",
-        }),
-        signal: AbortSignal.timeout(15000),
-      }
-    );
-
-    if (!res.ok) return null;
-
-    const data = await res.json();
-    return {
-      output: data.stdout || "",
-      error: data.stderr || data.error || null,
-      exitCode: data.code || 0,
-    };
-  } catch {
-    return null;
   }
 }
 
@@ -171,7 +195,7 @@ export async function POST(request: NextRequest) {
     if (typeof code !== "string" || typeof language !== "string") {
       return NextResponse.json(
         { error: "Missing or invalid 'code' or 'language' field", output: "", exitCode: -1 },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -197,39 +221,44 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Code cannot be empty", output: "", exitCode: -1 });
     }
 
-    // Strategy: Local runner → Piston API → Glot API → clear error message
+    const langDisplay = language.charAt(0).toUpperCase() + language.slice(1);
 
-    // 1. Try local code-runner (development)
+    // 1. Try local code-runner (development with `bun run dev`)
     const localResult = await executeViaLocalRunner(code, normalizedLang, stdin);
     if (localResult.ok && localResult.data) {
       return NextResponse.json(localResult.data);
     }
 
-    // 2. Try Piston-compatible APIs (free, no auth)
-    const pistonResult = await executeViaPiston(code, normalizedLang, stdin);
-    if (pistonResult) {
-      return NextResponse.json(pistonResult);
+    // 2. Try Judge0 CE public instance (free, NO auth — works on live/Vercel out of the box)
+    const publicResult = await executeViaJudge0Public(code, normalizedLang, stdin);
+    if (publicResult) {
+      return NextResponse.json(publicResult);
     }
 
-    // 3. Try Glot.io API
-    const glotResult = await executeViaGlot(code, normalizedLang, stdin);
-    if (glotResult) {
-      return NextResponse.json(glotResult);
+    // 3. Try Judge0 CE via RapidAPI (more reliable, needs JUDGE0_API_KEY env var)
+    const rapidResult = await executeViaJudge0RapidAPI(code, normalizedLang, stdin);
+    if (rapidResult) {
+      return NextResponse.json(rapidResult);
     }
 
-    // 4. All failed — helpful error message
-    const langDisplay = language.charAt(0).toUpperCase() + language.slice(1);
+    // 4. All backends failed
     return NextResponse.json({
       output: "",
-      error: `${langDisplay} could not be executed right now. The remote code execution services may be temporarily unavailable.\n\nTip: JavaScript, TypeScript, and Python run directly in your browser and always work. For ${langDisplay}, try again in a moment or run locally with \`bun run dev\`.`,
+      error:
+        `${langDisplay} execution failed — all remote code execution services are currently unavailable.\n\n` +
+        `JavaScript, TypeScript, and Python always work in the browser — no setup needed.\n\n` +
+        `For better reliability, you can add a Judge0 CE API key via RapidAPI (free, 100 runs/day):\n` +
+        `1. Go to rapidapi.com → sign up (free)\n` +
+        `2. Subscribe to "Judge0 CE" (free tier)\n` +
+        `3. Add JUDGE0_API_KEY to your Vercel environment variables\n` +
+        `4. Redeploy`,
       exitCode: -1,
     });
-
   } catch (error) {
     console.error("Code execution error:", error);
     return NextResponse.json(
       { output: "", error: "Failed to execute code. Please try again.", exitCode: -1 },
-      { status: 200 }
+      { status: 200 },
     );
   }
 }
