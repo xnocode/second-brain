@@ -1,29 +1,124 @@
-<?xml version="1.0" encoding="utf-8"?>
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 30 30" style="enable-background:new 0 0 30 30;" xml:space="preserve">
-<defs>
-  <style type="text/css">
-    .st194{fill:#2D2D2D;stroke:#FFFFFF;stroke-width:0.6317;stroke-miterlimit:10;}
-    .st23{fill:#FFFFFF;}
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f5d76e"/>
+      <stop offset="50%" stop-color="#e2b340"/>
+      <stop offset="100%" stop-color="#c49a18"/>
+    </linearGradient>
+    <linearGradient id="goldDim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e2b340" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#b8920e" stop-opacity="0.7"/>
+    </linearGradient>
+    <radialGradient id="glowBg" cx="50%" cy="35%" r="40%">
+      <stop offset="0%" stop-color="#e2b340" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#e2b340" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+  </defs>
 
-    .z-breathe {
-      animation: breathe 2.5s ease-in-out infinite;
-    }
+  <!-- Background -->
+  <rect x="2" y="2" width="116" height="116" rx="26" fill="#0c0c0c"/>
+  <rect x="2" y="2" width="116" height="116" rx="26" fill="none" stroke="#1e1e1e" stroke-width="1"/>
+  <!-- Subtle radial glow -->
+  <rect x="2" y="2" width="116" height="116" rx="26" fill="url(#glowBg)"/>
 
-    @keyframes breathe {
-      0%, 100% { opacity: 0.7; }
-      50% { opacity: 1; }
-    }
-  </style>
-</defs>
+  <!-- ── Network connections ── -->
+  <g stroke="#e2b340" fill="none" stroke-linecap="round">
 
-<g>
-  <path class="st194" d="M24.51,28.51H5.49c-2.21,0-4-1.79-4-4V5.49c0-2.21,1.79-4,4-4h19.03c2.21,0,4,1.79,4,4v19.03
-    C28.51,26.72,26.72,28.51,24.51,28.51z"/>
-  <g class="z-breathe">
-    <path class="st23" d="M15.47,7.1l-1.3,1.85c-0.2,0.29-0.54,0.47-0.9,0.47h-7.1V7.09C6.16,7.1,15.47,7.1,15.47,7.1z"/>
-    <polygon class="st23" points="24.3,7.1 13.14,22.91 5.7,22.91 16.86,7.1"/>
-    <path class="st23" d="M14.53,22.91l1.31-1.86c0.2-0.29,0.54-0.47,0.9-0.47h7.09v2.33H14.53z"/>
+    <!-- Outer hemisphere outlines (dim) -->
+    <g stroke-width="1" opacity="0.18">
+      <path d="M60,20 L34,30 Q22,42 24,58 Q28,72 42,76"/>
+      <path d="M60,20 L86,30 Q98,42 96,58 Q92,72 78,76"/>
+      <path d="M42,76 Q50,82 60,78 Q70,82 78,76"/>
+      <line x1="60" y1="78" x2="60" y2="95"/>
+    </g>
+
+    <!-- Internal network (brighter) -->
+    <g stroke-width="1.2" opacity="0.32">
+      <!-- Top to center -->
+      <line x1="60" y1="20" x2="60" y2="42"/>
+      <!-- Upper sides to inner nodes -->
+      <line x1="34" y1="30" x2="46" y2="42"/>
+      <line x1="86" y1="30" x2="74" y2="42"/>
+      <!-- Mid sides to center -->
+      <line x1="24" y1="52" x2="44" y2="52"/>
+      <line x1="96" y1="52" x2="76" y2="52"/>
+      <!-- Inner cross -->
+      <line x1="46" y1="42" x2="60" y2="42"/>
+      <line x1="74" y1="42" x2="60" y2="42"/>
+      <line x1="44" y1="52" x2="46" y2="42"/>
+      <line x1="76" y1="52" x2="74" y2="42"/>
+      <!-- Inner to lower -->
+      <line x1="46" y1="42" x2="44" y2="58"/>
+      <line x1="74" y1="42" x2="76" y2="58"/>
+      <line x1="44" y1="52" x2="44" y2="58"/>
+      <line x1="76" y1="52" x2="76" y2="58"/>
+      <!-- Lower converge -->
+      <line x1="44" y1="58" x2="60" y2="64"/>
+      <line x1="76" y1="58" x2="60" y2="64"/>
+      <line x1="60" y1="42" x2="60" y2="64"/>
+      <line x1="60" y1="64" x2="60" y2="78"/>
+      <!-- Cross-bridge (hemisphere connection) -->
+      <line x1="46" y1="42" x2="74" y2="42" stroke-dasharray="2,4" opacity="0.6"/>
+      <line x1="44" y1="58" x2="76" y2="58" stroke-dasharray="2,4" opacity="0.6"/>
+    </g>
+
+    <!-- Active pathway (brightest) -->
+    <g stroke-width="1.6" opacity="0.55" filter="url(#glow)">
+      <path d="M34,30 L46,42 L60,42 L60,64 L60,78" stroke="url(#gold)"/>
+    </g>
   </g>
-</g>
+
+  <!-- ── Orbit ring around center node ── -->
+  <circle cx="60" cy="42" r="12" fill="none" stroke="#e2b340" stroke-width="0.6" opacity="0.15" stroke-dasharray="3,5">
+    <animateTransform attributeName="transform" type="rotate" from="0 60 42" to="360 60 42" dur="20s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- ── Nodes ── -->
+
+  <!-- Soft glow behind center -->
+  <circle cx="60" cy="42" r="14" fill="#e2b340" opacity="0.07" filter="url(#softGlow)"/>
+
+  <!-- Outer nodes -->
+  <g fill="url(#goldDim)">
+    <circle cx="60" cy="20" r="3"/>
+    <circle cx="34" cy="30" r="2.5"/>
+    <circle cx="86" cy="30" r="2.5"/>
+    <circle cx="24" cy="52" r="2.2"/>
+    <circle cx="96" cy="52" r="2.2"/>
+    <circle cx="30" cy="64" r="1.8" opacity="0.5"/>
+    <circle cx="90" cy="64" r="1.8" opacity="0.5"/>
+    <circle cx="44" cy="72" r="1.8" opacity="0.45"/>
+    <circle cx="76" cy="72" r="1.8" opacity="0.45"/>
+    <circle cx="60" cy="95" r="1.5" opacity="0.3"/>
+  </g>
+
+  <!-- Inner nodes -->
+  <g fill="url(#gold)">
+    <circle cx="46" cy="42" r="2.8" opacity="0.7"/>
+    <circle cx="74" cy="42" r="2.8" opacity="0.7"/>
+    <circle cx="44" cy="52" r="2.8" opacity="0.65"/>
+    <circle cx="76" cy="52" r="2.8" opacity="0.65"/>
+    <circle cx="44" cy="58" r="2.5" opacity="0.55"/>
+    <circle cx="76" cy="58" r="2.5" opacity="0.55"/>
+    <circle cx="60" cy="64" r="3" opacity="0.65"/>
+    <circle cx="60" cy="78" r="2.5" opacity="0.5"/>
+  </g>
+
+  <!-- ★ Center node — "the spark" -->
+  <circle cx="60" cy="42" r="6" fill="url(#gold)" filter="url(#glow)">
+    <animate attributeName="r" values="6;7;6" dur="3s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+  </circle>
+  <circle cx="60" cy="42" r="2.5" fill="#fff8e0" opacity="0.7">
+    <animate attributeName="opacity" values="0.7;0.4;0.7" dur="3s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+  </circle>
+
+  <!-- "SB" monogram inside center node -->
+  <text x="60" y="43.5" text-anchor="middle" dominant-baseline="central" font-family="system-ui,-apple-system,sans-serif" font-size="6" font-weight="700" fill="#0c0c0c" opacity="0.85" letter-spacing="-0.5">SB</text>
 </svg>
