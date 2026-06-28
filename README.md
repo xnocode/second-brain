@@ -78,7 +78,7 @@ Most blogs are either static site generators that require complex toolchains, or
 
 ## Live Demo
 
-> 🚀 See it live at [second-brain-five-xi.vercel.app](second-brain-five-xi.vercel.app)
+> 🚀 See it live at [second-brain-five-xi.vercel.app](https://second-brain-five-xi.vercel.app/)
 
 ---
 
