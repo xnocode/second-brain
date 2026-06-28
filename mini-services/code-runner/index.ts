@@ -1,5 +1,5 @@
 import { spawn, execSync } from "child_process";
-import { mkdtempSync, writeFileSync, rmSync } from "fs";
+import { existsSync, mkdtempSync, writeFileSync, rmSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
 
@@ -35,7 +35,7 @@ function findBin(name: string, ...fallbacks: string[]): string {
   const pathDirs = (process.env.PATH || "").split(":");
   for (const dir of pathDirs) {
     const candidate = `${dir}/${name}`;
-    try { if (require("fs").existsSync(candidate)) return candidate; } catch {}
+    try { if (existsSync(candidate)) return candidate; } catch {}
   }
   // Return first fallback (caller handles if it doesn't exist)
   return fallbacks[0] || name;
