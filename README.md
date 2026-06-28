@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  A premium personal knowledge base and blog — write in Obsidian, publish to the web. Interactive code playgrounds, knowledge graphs, math, diagrams, and a polished dark/gold design system. Built with Next.js, zero external services required.
+  A premium personal knowledge base and blog write in Obsidian, publish to the web. Interactive code playgrounds, knowledge graphs, math, diagrams, and a polished dark/gold design system. Built with Next.js, zero external services required.
 </p>
 
 <p align="center">
