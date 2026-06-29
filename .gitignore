@@ -30,8 +30,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files
+.env
+!.env.example
 
 # vercel
 .vercel
@@ -53,10 +54,13 @@ server.log
 # Skills directory
 /skills/
 
-# Blog source folder (your local writing space — not committed)
-# Only content/posts/ (the synced output) gets committed to git
-blog/
-!blog/_template.md
+# database
+/db/
+*.db
+*.db-journal
 
-# Temp/mount directories
-upload/
+# download/temp
+download/
+
+# mini-services node_modules
+mini-services/*/node_modules
