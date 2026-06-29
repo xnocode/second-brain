@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef, useMemo } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
@@ -11,16 +11,16 @@ import { Footer } from "@/components/Footer";
 import { SearchDialog } from "@/components/SearchDialog";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { BackToTop } from "@/components/BackToTop";
-
+import { CategoryFilter } from "@/components/CategoryFilter";
 import { AboutSection } from "@/components/AboutSection";
 import { EmptyState } from "@/components/EmptyState";
 import { TagCloud } from "@/components/TagCloud";
+import { KnowledgeGraph } from "@/components/ObsidianGraph";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Toaster } from "sonner";
 import { ReadingStats } from "@/components/ReadingStats";
 import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
-import { BookOpen, LayoutGrid, List } from "lucide-react";
-import { FullGraphModal, GraphToggleButton } from "@/components/InteractiveGraph";
+import { BookOpen } from "lucide-react";
 import type { BlogPost } from "@/components/PostCard";
 import { getBookmarks, toggleBookmark } from "@/lib/bookmarks";
 import { getReadingStreak, getTotalRead, markAsRead, getRecentlyReadSlugs } from "@/lib/reading-history";
@@ -71,73 +71,71 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [searchOpen, setSearchOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
-  const [graphModalOpen, setGraphModalOpen] = useState(false);
   const [focusedPostIndex, setFocusedPostIndex] = useState(-1);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [activeTag, setActiveTag] = useState<string | null>(null);
-  // filteredPosts is derived — computed via useMemo below
+  const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
   const [postDetail, setPostDetail] = useState<PostDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
-  const [bookmarkSlugs, setBookmarkSlugs] = useState<string[]>(() => getBookmarks());
+  const [bookmarkSlugs, setBookmarkSlugs] = useState<string[]>([]);
   const [readingStreak, setReadingStreak] = useState(0);
   const [totalRead, setTotalRead] = useState(0);
 
   /* ---------- fetch site data ---------- */
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const [postsRes, catsRes, tagsRes, tagsCloudRes] = await Promise.all([
-          fetch("/api/posts"),
-          fetch("/api/categories"),
-          fetch("/api/tags"),
-          fetch("/api/tags-cloud"),
-        ]);
-        const postsData = await postsRes.json();
-        const catsData = await catsRes.json();
-        const tagsData = await tagsRes.json();
-        const tagsCloudData = await tagsCloudRes.json();
+  const fetchSiteData = useCallback(async () => {
+    try {
+      const [postsRes, catsRes, tagsRes, tagsCloudRes] = await Promise.all([
+        fetch("/api/posts"),
+        fetch("/api/categories"),
+        fetch("/api/tags"),
+        fetch("/api/tags-cloud"),
+      ]);
+      const postsData = await postsRes.json();
+      const catsData = await catsRes.json();
+      const tagsData = await tagsRes.json();
+      const tagsCloudData = await tagsCloudRes.json();
 
-        const posts: BlogPost[] = (postsData.posts || []).map(
-          (p: Record<string, unknown>) => ({
-            slug: p.slug as string,
-            title: p.title as string,
-            date: p.date as string,
-            excerpt: p.excerpt as string,
-            tags: (p.tags as string[]) || [],
-            category: (p.category as string) || "Uncategorized",
-            readingTime: p.readingTime as string,
-            cover: p.cover as string | undefined,
-          })
-        );
+      const posts: BlogPost[] = (postsData.posts || []).map(
+        (p: Record<string, unknown>) => ({
+          slug: p.slug as string,
+          title: p.title as string,
+          date: p.date as string,
+          excerpt: p.excerpt as string,
+          tags: (p.tags as string[]) || [],
+          category: (p.category as string) || "Uncategorized",
+          readingTime: p.readingTime as string,
+          cover: p.cover as string | undefined,
+        })
+      );
 
-        const categories: { name: string; count: number }[] = (
-          catsData.categories || []
-        ).map((c: Record<string, unknown>) => ({
-          name: c.category as string,
-          count: c.count as number,
-        }));
+      const categories: { name: string; count: number }[] = (
+        catsData.categories || []
+      ).map((c: Record<string, unknown>) => ({
+        name: c.category as string,
+        count: c.count as number,
+      }));
 
-        const tags: { tag: string; count: number }[] =
-          tagsData.tags || [];
+      const tags: { tag: string; count: number }[] =
+        tagsData.tags || [];
 
-        if (cancelled) return;
-        setData({
-          postCount: posts.length,
-          categoryCount: categories.length,
-          tagCount: tags.length,
-          posts,
-          categories,
-          tags: tagsCloudData.tags || [],
-        });
-      } catch (err) {
-        console.error("Failed to fetch site data:", err);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => { cancelled = true; };
+      setData({
+        postCount: posts.length,
+        categoryCount: categories.length,
+        tagCount: tags.length,
+        posts,
+        categories,
+        tags: tagsCloudData.tags || [],
+      });
+      setFilteredPosts(posts);
+    } catch (err) {
+      console.error("Failed to fetch site data:", err);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchSiteData();
+  }, [fetchSiteData]);
 
   /* ---------- navigation ---------- */
   const navigate = useCallback((target: string) => {
@@ -150,7 +148,6 @@ export default function HomePage() {
     ) {
       setPage({ view: target });
       setActiveCategory(null);
-      setActiveTag(null);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, []);
@@ -183,53 +180,38 @@ export default function HomePage() {
   }, []);
 
   /* ---------- category filter ---------- */
-  const filteredPosts = useMemo(() => {
-    if (!data) return [];
+  useEffect(() => {
+    if (!data) return;
     if (activeCategory === null) {
-      if (activeTag) {
-        return data.posts.filter((p) =>
-          p.tags.some((t) => t.toLowerCase() === activeTag.toLowerCase())
-        );
-      }
-      return data.posts;
+      setFilteredPosts(data.posts);
+    } else {
+      setFilteredPosts(
+        data.posts.filter((p) => p.category === activeCategory)
+      );
     }
-    return data.posts.filter((p) => p.category === activeCategory);
-  }, [data, activeCategory, activeTag]);
-
-  /* ---------- tag click from article ---------- */
-  const handleTagClick = useCallback(
-    (tag: string) => {
-      setActiveTag(tag);
-      setActiveCategory(null);
-      setPage({ view: "blog" });
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    },
-    []
-  );
+  }, [activeCategory, data]);
 
   /* ---------- bookmarks sync ---------- */
   const refreshBookmarks = useCallback(() => {
     setBookmarkSlugs(getBookmarks());
   }, []);
 
-  const postSlugs = useMemo(() => data?.posts.map(p => p.slug) ?? [], [data?.posts]);
   const refreshReadingStats = useCallback(() => {
-    const s = getReadingStreak();
-    const t = getTotalRead(postSlugs);
-    requestAnimationFrame(() => {
-      setReadingStreak(s);
-      setTotalRead(t);
-    });
-  }, [postSlugs]);
+    setReadingStreak(getReadingStreak());
+    setTotalRead(getTotalRead());
+  }, []);
 
   /* ---------- recently read ---------- */
-  const [recentReadSlugs, setRecentReadSlugs] = useState<string[]>(() => getRecentlyReadSlugs(5));
+  const [recentReadSlugs, setRecentReadSlugs] = useState<string[]>([]);
 
   const refreshRecentRead = useCallback(() => {
     setRecentReadSlugs(getRecentlyReadSlugs(5));
   }, []);
 
   useEffect(() => {
+    refreshBookmarks();
+    refreshReadingStats();
+    refreshRecentRead();
     const onBookmarksChanged = () => refreshBookmarks();
     const onHistoryChanged = () => {
       refreshReadingStats();
@@ -421,9 +403,17 @@ export default function HomePage() {
                       <TagCloud
                         tags={data.tags.slice(0, 8)}
                         onTagClick={(tag) => {
-                          setActiveCategory(null);
-                          setActiveTag(tag);
                           navigate("blog");
+                          setTimeout(() => {
+                            setActiveCategory(null);
+                            setFilteredPosts(
+                              data.posts.filter((p) =>
+                                p.tags.some(
+                                  (t) => t.toLowerCase() === tag.toLowerCase()
+                                )
+                              )
+                            );
+                          }, 0);
                         }}
                       />
                     </section>
@@ -461,7 +451,13 @@ export default function HomePage() {
                   {/* About Section */}
                   <AboutSection />
 
-
+                  {/* Knowledge Graph */}
+                  <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-16">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--border-subtle)] to-transparent" />
+                    </div>
+                    <KnowledgeGraph onNodeClick={openPost} />
+                  </div>
                 </>
               ) : (
                 <EmptyState
@@ -485,41 +481,50 @@ export default function HomePage() {
             >
               <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
                 {/* Page Header */}
-                <div className="mb-10 flex items-start justify-between">
-                  <div>
-                    <span className="text-overline">Archive</span>
-                    <h1 className="text-h1 text-[var(--text-primary)] mt-2">
-                      {activeTag ? (
-                        <span className="flex items-center gap-3">
-                          Articles tagged
-                          <span className="inline-flex items-center px-3 py-1 rounded-lg text-[var(--accent-gold)] bg-[var(--accent-gold-muted)] border border-[rgba(226,179,64,0.15)]">{activeTag}</span>
-                        </span>
-                      ) : activeCategory ? (
-                        <span className="flex items-center gap-3">
-                          {activeCategory}
-                        </span>
-                      ) : (
-                        "All Articles"
-                      )}
-                    </h1>
-                    <p className="mt-3 text-[var(--text-secondary)] text-lg max-w-2xl">
-                      {activeTag
-                        ? `${filteredPosts.length} article${filteredPosts.length !== 1 ? "s" : ""} with the tag "${activeTag}".`
-                        : activeCategory
-                          ? `${filteredPosts.length} article${filteredPosts.length !== 1 ? "s" : ""} in the ${activeCategory} category.`
-                          : "Explore the complete collection of notes, guides, and thoughts published on Second Brain."
-                      }
-                    </p>
-                    {(activeTag || activeCategory) && (
-                      <button
-                        onClick={() => { setActiveTag(null); setActiveCategory(null); }}
-                        className="mt-3 text-sm text-[var(--accent-gold)] hover:text-[var(--accent-gold-hover)] transition-colors"
-                      >
-                        ← Show all articles
-                      </button>
-                    )}
+                <div className="mb-10">
+                  <span className="text-overline">Archive</span>
+                  <h1 className="text-h1 text-[var(--text-primary)] mt-2">
+                    All Articles
+                  </h1>
+                  <p className="mt-3 text-[var(--text-secondary)] text-lg max-w-2xl">
+                    Explore the complete collection of notes, guides, and
+                    thoughts published on Second Brain.
+                  </p>
+                </div>
+
+                {/* Category Filter */}
+                {data && data.categories.length > 0 && (
+                  <div className="mb-8">
+                    <CategoryFilter
+                      categories={data.categories}
+                      activeCategory={activeCategory}
+                      onSelect={setActiveCategory}
+                    />
                   </div>
-                  <GraphToggleButton onClick={() => setGraphModalOpen(true)} />
+                )}
+
+                {/* Tag Cloud */}
+                {data && data.tags.length > 0 && (
+                  <div className="mb-10">
+                    <TagCloud
+                      tags={data.tags}
+                      onTagClick={(tag) => {
+                        setActiveCategory(null);
+                        setFilteredPosts(
+                          data.posts.filter((p) =>
+                            p.tags.some(
+                              (t) => t.toLowerCase() === tag.toLowerCase()
+                            )
+                          )
+                        );
+                      }}
+                    />
+                  </div>
+                )}
+
+                {/* Knowledge Graph */}
+                <div className="mb-10">
+                  <KnowledgeGraph onNodeClick={openPost} compact />
                 </div>
 
                 {/* Posts Grid */}
@@ -529,22 +534,19 @@ export default function HomePage() {
                   <BlogGrid
                     posts={filteredPosts}
                     onPostClick={openPost}
-                    showViewToggle
                   />
                 ) : (
                   <EmptyState
                     title="No articles found"
                     description={
-                      activeTag
-                        ? `No articles with the tag "${activeTag}" yet.`
-                        : activeCategory
-                          ? `No articles in the "${activeCategory}" category yet.`
-                          : "Start adding markdown files to content/posts/ to see them here."
+                      activeCategory
+                        ? `No articles in the "${activeCategory}" category yet.`
+                        : "Start adding markdown files to content/posts/ to see them here."
                     }
-                    actionLabel={activeTag || activeCategory ? "Show all articles" : undefined}
+                    actionLabel={activeCategory ? "Show all articles" : undefined}
                     onAction={
-                      activeTag || activeCategory
-                        ? () => { setActiveTag(null); setActiveCategory(null); }
+                      activeCategory
+                        ? () => setActiveCategory(null)
                         : undefined
                     }
                   />
@@ -591,9 +593,7 @@ export default function HomePage() {
                         }}
                         onClick={() => {
                           setActiveCategory(cat.name);
-                          setActiveTag(null);
-                          setPage({ view: "blog" });
-                          window.scrollTo({ top: 0, behavior: "smooth" });
+                          navigate("blog");
                         }}
                         className="group relative flex items-center justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface-3)] hover:border-[rgba(226,179,64,0.3)] p-6 text-left transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.3),0_0_15px_rgba(226,179,64,0.06)]"
                       >
@@ -655,7 +655,7 @@ export default function HomePage() {
                   </div>
                   {readingStreak > 0 && totalRead > 0 && (
                     <div className="mt-4">
-                      <ReadingStats validSlugs={data?.posts.map(p => p.slug)} />
+                      <ReadingStats />
                     </div>
                   )}
                 </div>
@@ -705,7 +705,6 @@ export default function HomePage() {
                   onBack={goBack}
                   onPostClick={openPost}
                   onNavigate={navigate}
-                  onTagClick={handleTagClick}
                   relatedPosts={relatedPosts}
                 />
               ) : (
@@ -776,54 +775,190 @@ export default function HomePage() {
 
                   {/* How it works */}
                   <div className="mb-16">
-                    <h2 className="text-h3 text-[var(--text-primary)] mb-8 text-center">
+                    <h2 className="text-h3 text-[var(--text-primary)] mb-3 text-center">
                       How It Works
                     </h2>
+                    <p className="text-sm text-[var(--text-secondary)] text-center mb-10 max-w-xl mx-auto leading-relaxed">
+                      Get your own Second Brain running in under 2 minutes. Clone, install, create one env file, and you're live.
+                    </p>
+
+                    {/* Step cards with commands */}
                     <div className="space-y-6">
-                      {[
-                        {
-                          step: "01",
-                          title: "Write in Obsidian",
-                          description:
-                            "Create markdown files in your blog/ folder using Obsidian or any editor. Add YAML frontmatter with title, date, tags, category, and set draft: false to publish.",
-                        },
-                        {
-                          step: "02",
-                          title: "Sync & Preview",
-                          description:
-                            "Run `bun run scripts/sync-vault.ts` to process your posts, then `bun run dev` to preview everything locally. Verify it looks right before going live.",
-                        },
-                        {
-                          step: "03",
-                          title: "Go Live",
-                          description:
-                            "Run `bun run publish` — it syncs your posts, commits, and pushes to GitHub. Vercel auto-deploys. Your Second Brain is live.",
-                        },
-                      ].map((item, i) => (
-                        <motion.div
-                          key={item.step}
-                          initial={{ opacity: 0, y: 16 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{
-                            delay: 0.1 + i * 0.1,
-                            duration: 0.5,
-                            ease: [0.22, 1, 0.36, 1],
-                          }}
-                          className="flex gap-6 items-start rounded-xl border border-[var(--border-subtle)] glass p-6 sm:p-8 hover:border-[rgba(226,179,64,0.2)] transition-colors duration-300"
-                        >
+                      {/* Step 1: Clone & Rename */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.05, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                        className="rounded-xl border border-[var(--border-subtle)] glass overflow-hidden hover:border-[rgba(226,179,64,0.2)] transition-colors duration-300"
+                      >
+                        <div className="flex items-start gap-4 sm:gap-6 p-6 sm:p-8">
                           <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--accent-gold-muted)] text-[var(--accent-gold)] font-bold text-lg">
-                            {item.step}
+                            01
                           </div>
-                          <div>
-                            <h3 className="text-base font-semibold text-[var(--text-primary)] mb-2">
-                              {item.title}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1">
+                              Clone & Rename
                             </h3>
-                            <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-                              {item.description}
+                            <p className="text-sm text-[var(--text-secondary)] mb-4 leading-relaxed">
+                              Clone the repository, then rename the folder to your own project name.
                             </p>
+                            <div className="rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border-subtle)] overflow-hidden">
+                              <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--border-subtle)]">
+                                <div className="h-2.5 w-2.5 rounded-full bg-red-500/60" />
+                                <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/60" />
+                                <div className="h-2.5 w-2.5 rounded-full bg-green-500/60" />
+                                <span className="ml-2 text-[10px] text-[var(--text-faint)] font-mono">Terminal</span>
+                              </div>
+                              <pre className="p-4 text-xs sm:text-sm text-[var(--text-secondary)] font-mono leading-relaxed overflow-x-auto"><code>{`# Clone the repo
+git clone https://github.com/xnocode/second-brain.git
+cd second-brain
+
+# Rename to your own project name
+# Windows PowerShell:
+cd ..
+Rename-Item -Path "second-brain" -NewName "my-brain"
+cd my-brain
+
+# Mac/Linux:
+# cd ..
+# mv second-brain my-brain
+# cd my-brain`}</code></pre>
+                            </div>
                           </div>
-                        </motion.div>
-                      ))}
+                        </div>
+                      </motion.div>
+
+                      {/* Step 2: Install & .env */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.15, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                        className="rounded-xl border border-[var(--border-subtle)] glass overflow-hidden hover:border-[rgba(226,179,64,0.2)] transition-colors duration-300"
+                      >
+                        <div className="flex items-start gap-4 sm:gap-6 p-6 sm:p-8">
+                          <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--accent-gold-muted)] text-[var(--accent-gold)] font-bold text-lg">
+                            02
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1">
+                              Install Dependencies & Create .env
+                            </h3>
+                            <p className="text-sm text-[var(--text-secondary)] mb-4 leading-relaxed">
+                              Install all packages, then create the environment file for the database. <strong className="text-[var(--text-primary)]">Windows users:</strong> always use <code className="text-[var(--accent-gold)] text-xs">Set-Content -NoNewline</code> — regular <code className="text-xs text-red-400/80">echo</code> adds invisible characters that break Prisma.
+                            </p>
+                            <div className="rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border-subtle)] overflow-hidden">
+                              <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--border-subtle)]">
+                                <div className="h-2.5 w-2.5 rounded-full bg-red-500/60" />
+                                <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/60" />
+                                <div className="h-2.5 w-2.5 rounded-full bg-green-500/60" />
+                                <span className="ml-2 text-[10px] text-[var(--text-faint)] font-mono">Terminal</span>
+                              </div>
+                              <pre className="p-4 text-xs sm:text-sm text-[var(--text-secondary)] font-mono leading-relaxed overflow-x-auto"><code>{`# Install packages (same on all platforms)
+npm install
+
+# Create .env file
+# Windows PowerShell (REQUIRED):
+Set-Content -Path .env -Value "DATABASE_URL=file:./db/custom.db" -NoNewline
+
+# Mac/Linux:
+# echo "DATABASE_URL=file:./db/custom.db" > .env`}</code></pre>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+
+                      {/* Step 3: Database & Run */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.25, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                        className="rounded-xl border border-[var(--border-subtle)] glass overflow-hidden hover:border-[rgba(226,179,64,0.2)] transition-colors duration-300"
+                      >
+                        <div className="flex items-start gap-4 sm:gap-6 p-6 sm:p-8">
+                          <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--accent-gold-muted)] text-[var(--accent-gold)] font-bold text-lg">
+                            03
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1">
+                              Setup Database & Run
+                            </h3>
+                            <p className="text-sm text-[var(--text-secondary)] mb-4 leading-relaxed">
+                              Initialize the SQLite database, then start the dev server. Your site will be live at <code className="text-[var(--accent-gold)] text-xs">http://localhost:3000</code>.
+                            </p>
+                            <div className="rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border-subtle)] overflow-hidden">
+                              <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--border-subtle)]">
+                                <div className="h-2.5 w-2.5 rounded-full bg-red-500/60" />
+                                <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/60" />
+                                <div className="h-2.5 w-2.5 rounded-full bg-green-500/60" />
+                                <span className="ml-2 text-[10px] text-[var(--text-faint)] font-mono">Terminal</span>
+                              </div>
+                              <pre className="p-4 text-xs sm:text-sm text-[var(--text-secondary)] font-mono leading-relaxed overflow-x-auto"><code>{`# Setup the database
+npx prisma db push
+
+# Start the dev server
+# Windows PowerShell:
+npx next dev -p 3000
+
+# Mac/Linux:
+# npm run dev
+# (or: npx next dev -p 3000)
+
+# Open http://localhost:3000 in your browser 🎉`}</code></pre>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+
+                      {/* Step 4: Deploy */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.35, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                        className="rounded-xl border border-[var(--border-subtle)] glass overflow-hidden hover:border-[rgba(226,179,64,0.2)] transition-colors duration-300"
+                      >
+                        <div className="flex items-start gap-4 sm:gap-6 p-6 sm:p-8">
+                          <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--accent-gold-muted)] text-[var(--accent-gold)] font-bold text-lg">
+                            04
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1">
+                              Push to GitHub & Deploy to Vercel
+                            </h3>
+                            <p className="text-sm text-[var(--text-secondary)] mb-4 leading-relaxed">
+                              Create a GitHub repo, push your code, then connect to Vercel for automatic deployments. Every push to GitHub auto-deploys.
+                            </p>
+                            <div className="rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border-subtle)] overflow-hidden">
+                              <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--border-subtle)]">
+                                <div className="h-2.5 w-2.5 rounded-full bg-red-500/60" />
+                                <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/60" />
+                                <div className="h-2.5 w-2.5 rounded-full bg-green-500/60" />
+                                <span className="ml-2 text-[10px] text-[var(--text-faint)] font-mono">Terminal</span>
+                              </div>
+                              <pre className="p-4 text-xs sm:text-sm text-[var(--text-secondary)] font-mono leading-relaxed overflow-x-auto"><code>{`# 1. Create your repo on github.com/new (leave it empty)
+
+# 2. Push your code
+git init
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git remote add origin https://github.com/YOUR-USERNAME/YOUR-REPO.git
+git push -u origin main
+
+# 3. On Vercel: Import repo → Add DATABASE_URL env var → Deploy
+# 4. Every git push auto-deploys! ✅`}</code></pre>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    </div>
+
+                    {/* Quick note for non-technical users */}
+                    <div className="mt-8 rounded-xl border border-[rgba(226,179,64,0.15)] bg-[rgba(226,179,64,0.03)] p-6 text-center">
+                      <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                        <span className="text-[var(--accent-gold)] font-semibold">No terminal?</span> You can also{" "}
+                        <span className="text-[var(--text-primary)] font-medium">Fork</span> this repo on GitHub and deploy directly to Vercel — all editing happens in your browser.
+                        See the full guide in the <span className="text-[var(--text-primary)] font-medium">README.md</span>.
+                      </p>
                     </div>
                   </div>
 
@@ -852,20 +987,18 @@ title: "My Published Note"
 date: 2025-01-15
 tags: [productivity, thinking]
 category: "Thinking"
-draft: false
 excerpt: "A short description"
 ---
 
 # My Published Note
 
-This note will appear on the website because
-\`draft\` is set to \`false\`.
+This note will appear on the website.
 
 ## Key Points
 
-- Write markdown in the blog/ folder
-- Set \`draft: false\` to publish
-- Run \`bun run scripts/sync-vault.ts\` then \`bun run dev\` to preview`}</code>
+- Write in Obsidian or any markdown editor
+- Place .md files in content/posts/
+- Push to GitHub → Vercel auto-deploys`}</code>
                       </pre>
                     </div>
                   </div>
@@ -902,13 +1035,6 @@ This note will appear on the website because
         onClose={() => setShortcutsOpen(false)}
       />
       <BackToTop />
-
-      {/* Full Graph Modal */}
-      <FullGraphModal
-        open={graphModalOpen}
-        onClose={() => setGraphModalOpen(false)}
-        onNavigate={openPost}
-      />
       <Toaster
         position="bottom-right"
         toastOptions={{
