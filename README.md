@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/logo.png" alt="Second Brain" width="80" height="80" />
+  <img src="public/logo.svg" alt="Second Brain" width="80" height="80" />
 </p>
 
 <h1 align="center">Second Brain</h1>
