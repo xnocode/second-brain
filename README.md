@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/logo.svg" alt="Second Brain" width="64" height="64" />
+  <img src="public/logo.png" alt="Second Brain" width="80" height="80" />
 </p>
 
 <h1 align="center">Second Brain</h1>
@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  A premium personal knowledge base and blog write in Obsidian, publish to the web. Interactive code playgrounds, knowledge graphs, math, diagrams, and a polished dark/gold design system. Built with Next.js, zero external services required.
+  A premium personal knowledge base and blog — write in Obsidian, publish to the web. Interactive code playgrounds, knowledge graphs, math, diagrams, and a polished dark/gold design system. Built with Next.js, zero external services required.
 </p>
 
 <p align="center">
@@ -18,631 +18,441 @@
   <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=flat-square&logo=tailwindcss" alt="Tailwind CSS" />
   <img src="https://img.shields.io/badge/shadcn/ui-New_York-18181B?style=flat-square" alt="shadcn/ui" />
-  <img src="https://img.shields.io/badge/Bun-1-000000?style=flat-square&logo=bun" alt="Bun" />
 </p>
 
 ---
 
-## Table of Contents
+## ✨ Live Demo
 
-- [Why Second Brain?](#why-second-brain)
-- [Live Demo](#live-demo)
-- [Features](#features)
-  - [Writing & Content](#writing--content)
-  - [Interactive Code Playground](#interactive-code-playground)
-  - [Knowledge Graph](#knowledge-graph)
-  - [Reading Experience](#reading-experience)
-  - [UI & Design](#ui--design)
-  - [SEO & Distribution](#seo--distribution)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
+👉 **[https://second-brain.vercel.app](https://second-brain.vercel.app)**
+
+---
+
+## 📋 Table of Contents
+
+- [Why Second Brain?](#-why-second-brain)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Quick Start — Run Locally](#-quick-start--run-locally)
   - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Development](#development)
-- [Writing Posts](#writing-posts)
-  - [Frontmatter](#frontmatter)
-  - [Wiki-Links](#wiki-links)
-  - [Code Blocks](#code-blocks)
-  - [Math (KaTeX)](#math-katex)
-  - [Diagrams (Mermaid)](#diagrams-mermaid)
-  - [Media Embeds](#media-embeds)
-  - [Obsidian Ink](#obsidian-ink)
-- [Obsidian Workflow](#obsidian-workflow)
-  - [Setup](#setup)
-  - [Daily Publishing](#daily-publishing)
-  - [Sync Script Details](#sync-script-details)
-- [Deployment](#deployment)
-  - [Vercel (Recommended)](#vercel-recommended)
-  - [Docker](#docker)
-  - [Any Node.js Host](#any-nodejs-host)
-- [Configuration](#configuration)
-  - [Environment Variables](#environment-variables)
-  - [Customization](#customization)
-- [Scripts Reference](#scripts-reference)
-- [License](#license)
+  - [Step 1: Clone the Repository](#step-1-clone-the-repository)
+  - [Step 2: Rename the Folder](#step-2-rename-the-folder)
+  - [Step 3: Install Dependencies](#step-3-install-dependencies)
+  - [Step 4: Create the .env File](#step-4-create-the-env-file)
+  - [Step 5: Setup Database](#step-5-setup-database)
+  - [Step 6: Run Locally](#step-6-run-locally)
+  - [Step 7: Open in Browser](#step-7-open-in-browser)
+- [Writing Posts](#-writing-posts)
+- [Push to Your Own GitHub](#-push-to-your-own-github)
+- [Deploy to Vercel (Live Site)](#-deploy-to-vercel-live-site)
+- [Update Your Live Site](#-update-your-live-site)
+- [Fork Option (No Terminal)](#-fork-option-no-terminal)
+- [Project Structure](#-project-structure)
+- [Obsidian Workflow](#-obsidian-workflow)
+- [Troubleshooting](#-troubleshooting)
 
 ---
 
-## Why Second Brain?
+## 🧠 Why Second Brain?
 
-Most blogs are either static site generators that require complex toolchains, or hosted platforms that lock you in. Second Brain is different:
+In a world of information overload, the ability to capture, organize, and retrieve knowledge is a superpower. Second Brain is built on the principle that your notes should work for you — not the other way around.
 
-- **Write in Obsidian** — your notes are your blog posts. Use wiki-links, backlinks, and your existing workflow.
-- **Zero external services** — no database server, no CMS, no API keys needed. Everything runs out of the box.
-- **Interactive content** — readers can run code, explore knowledge graphs, and hover-preview linked posts.
-- **Deploy for free** — Vercel free tier handles everything. No server costs, no configuration.
-- **Markdown-first** — write in plain markdown with standard frontmatter. No proprietary formats.
+Inspired by the **Zettelkasten method** and tools like **Obsidian**, this platform treats every note as a node in a growing network of understanding. Ideas connect, patterns emerge, and knowledge compounds over time.
+
+**Zero external services required.** No Redis, no MySQL, no API keys. Just clone, install, and run.
 
 ---
 
-## Live Demo
-
-> 🚀 See it live at [second-brain-five-xi.vercel.app](https://second-brain-five-xi.vercel.app/)
-
----
-
-## Features
-
-### Writing & Content
+## ✨ Features
 
 | Feature | Description |
-|---------|-------------|
-| **Markdown pipeline** | GFM tables, strikethrough, task lists, syntax highlighting (Shiki — one-dark-pro / one-light themes) |
-| **Wiki-links** | `[[post-slug]]` syntax from Obsidian, converted to interactive links with hover previews |
-| **Broken link detection** | Links to non-existent posts get a distinct visual style so you can fix them |
-| **Math rendering** | LaTeX equations via KaTeX — inline `$e=mc^2$` and block `$$...$$` |
-| **Diagrams** | Mermaid flowcharts, sequence diagrams, Gantt charts rendered client-side |
-| **Media embeds** | YouTube/Vimeo (lazy-loaded thumbnails), PDF viewer, HTML5 audio player |
-| **Obsidian Ink** | Hand-drawn SVG sketches from the Obsidian Ink plugin, themed for light/dark |
-
-### Interactive Code Playground
-
-Every code block with a supported language gets a **Run** button. Readers can execute code directly in their browser — no setup, no server needed for most languages.
-
-**Browser-native (zero server dependency):**
-
-| Language | Runtime | Notes |
-|----------|---------|-------|
-| JavaScript | `async Function` constructor | Full console interception (log, error, warn, info, table, clear) |
-| TypeScript | Transpiled via Function | Same as JavaScript |
-| Python | [Pyodide](https://pyodide.org) (WebAssembly) | Supports `print()`, `input()`, and standard library |
-
-**Server-side (free, no auth required):**
-
-| Language | Backend | Notes |
-|----------|---------|-------|
-| C, C++ | Judge0 CE | `ce.judge0.com` — public instance, no API key |
-| Java | Judge0 CE | |
-| Rust | Judge0 CE | |
-| Go | Judge0 CE | |
-| Ruby, PHP, Bash, Kotlin, Scala, Lua, R, Swift | Judge0 CE | |
-
-**Execution fallback chain:**
-
-```
-Local code-runner (dev only)
-    → ce.judge0.com (free, no auth — production)
-        → Judge0 CE RapidAPI (optional, if JUDGE0_API_KEY set)
-```
-
-**Code block features:**
-- Colored language badges with per-language color coding
-- "⚡ Browser" / "🐍 Pyodide" environment tags
-- Stdin input textarea for languages that need user input
-- Output panel with stdout (white) and stderr (red) sections
-- Copy button on every code block
-
-### Knowledge Graph
-
-A D3.js force-directed graph that visualizes connections between your posts via wiki-links:
-
-- Nodes sized by connection count, colored by category
-- Full-screen modal view with zoom/pan
-- Inline graph shown on each post showing its connections
-- Click a node to navigate to that post
-- Smooth physics-based animation
-
-### Reading Experience
-
-| Feature | Description |
-|---------|-------------|
-| **Reading progress bar** | Thin gold bar at the top showing scroll progress |
-| **Table of contents** | Desktop sidebar TOC with scroll-spy active heading tracking; mobile drawer |
-| **Reading position memory** | Remembers your scroll position per article (localStorage) |
-| **Reading streaks** | Tracks consecutive days of reading with a flame counter |
-| **Reading history** | Recently read articles shown on the home page |
-| **Bookmarks** | Save posts to read later (localStorage, syncs across views) |
-| **Command palette search** | `Cmd+K` / `Ctrl+K` fuzzy search across titles, content, tags, categories |
-| **SPA navigation** | Client-side page transitions with Framer Motion — no full page reloads |
-
-### UI & Design
-
-- **Dark-first design** with warm gold (`#e2b340`) accent on near-black backgrounds
-- **Full light mode** — toggles all surfaces, text, and code themes
-- **Animated hero** — gradient orbs, grid texture overlay, animated stat counters
-- **Blog grid/list toggle** — switch between card grid and compact list views
-- **Animated tag cloud** — tag sizes proportional to post count
-- **Responsive** — mobile-optimized layouts, hamburger menu, mobile TOC drawer
-- **Keyboard shortcuts** — `Cmd+K` search, `?` for shortcuts dialog, `T` for theme toggle
-- **Breadcrumb navigation** on post pages
-- **Back to top** button with scroll threshold
-- **Social share buttons** on posts
-- **Smooth page transitions** via Framer Motion
-
-### SEO & Distribution
-
-| Feature | Description |
-|---------|-------------|
-| **Dynamic OG images** | Per-post SVG Open Graph images with category, title, and date |
-| **RSS 2.0 feed** | Full-content RSS at `/api/rss` |
-| **XML Sitemap** | Auto-generated at `/api/sitemap.xml` with priority and changefreq |
-| **robots.txt** | Configured for all major search engines |
+|---|---|
+| 📝 **Markdown Native** | Write in clean, portable Markdown — the language of developers |
+| 🕸️ **Knowledge Graph** | Interactive Obsidian-style graph showing connections between posts |
+| 🧩 **Code Playground** | Run code directly in the browser — Python, JS, C++, Java, Rust, Go & more |
+| 🧮 **Math & Diagrams** | LaTeX math rendering and Mermaid diagrams out of the box |
+| 🔍 **Instant Search** | Full-text search across your entire knowledge base |
+| 📂 **Categories & Tags** | Organized into clear categories and tags |
+| 🌙 **Dark/Light Mode** | Polished dark/gold design system with theme toggle |
+| 📖 **Reading Stats** | Track your reading progress and bookmarks |
+| 🎨 **Premium Design** | Distraction-free reading experience |
+| 🔗 **Obsidian Compatible** | Write in Obsidian, publish to the web |
+| 📱 **Responsive** | Works beautifully on mobile, tablet, and desktop |
 
 ---
 
-## Tech Stack
+## ⚡ Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| **Framework** | Next.js 16 (App Router, standalone output) |
-| **Runtime** | Bun (also compatible with Node.js) |
-| **Language** | TypeScript 5 |
-| **React** | React 19 |
-| **Styling** | Tailwind CSS 4 + shadcn/ui (New York style) |
-| **Animations** | Framer Motion 12 |
-| **Icons** | Lucide React |
-| **Database** | SQLite via Prisma 6 (optional, for future features) |
-| **Content** | Markdown files parsed with `gray-matter` + unified/remark/rehype pipeline |
-| **Syntax Highlighting** | Shiki (one-dark-pro / one-light) |
-| **Math** | KaTeX |
-| **Diagrams** | Mermaid 11 |
-| **Graph** | D3.js force-directed layout |
-| **Search** | cmdk command palette |
-| **Code Execution** | Pyodide (Python WASM) + Judge0 CE (compiled languages) |
-| **Theme** | next-themes (dark/light) |
-| **State** | Zustand, React Context, localStorage |
+- **Framework:** Next.js 16 (App Router)
+- **Language:** TypeScript 5
+- **Styling:** Tailwind CSS 4 + shadcn/ui
+- **Database:** Prisma ORM + SQLite (zero config)
+- **State:** Zustand + TanStack Query
+- **Animations:** Framer Motion
+- **Code Execution:** Pyodide (Python), Judge0 CE (compiled languages)
 
 ---
 
-## Project Structure
-
-```
-second-brain/
-├── content/
-│   └── posts/                  # Your blog posts (markdown)
-│       ├── my-first-post.md
-│       └── another-post.md
-├── public/
-│   ├── covers/                 # Post cover images
-│   ├── images/                 # Synced images from Obsidian vault
-│   └── logo.svg                # Site logo
-├── blog/                       # Your Obsidian vault (gitignored)
-│   ├── my-first-post.md        # Source notes
-│   ├── attachments/            # Obsidian image attachments
-│   └── Ink/                    # Obsidian Ink drawings
-├── scripts/
-│   └── sync-vault.ts           # Obsidian vault → content/posts/ sync
-├── mini-services/
-│   └── code-runner/            # Local code execution service (dev only)
-│       ├── index.ts
-│       └── Dockerfile
-├── prisma/
-│   └── schema.prisma           # Database schema (SQLite)
-├── src/
-│   ├── app/
-│   │   ├── layout.tsx          # Root layout, fonts, metadata
-│   │   ├── page.tsx            # Main SPA page
-│   │   ├── globals.css         # Theme, animations, custom styles
-│   │   └── api/                # API routes
-│   │       ├── posts/          # Blog posts + search
-│   │       ├── categories/     # Categories with counts
-│   │       ├── tags/           # Tags with counts
-│   │       ├── tags-cloud/     # Tag cloud data
-│   │       ├── graph/          # Knowledge graph data
-│   │       ├── execute/        # Code execution API
-│   │       ├── og/             # Dynamic OG images
-│   │       ├── rss/            # RSS feed
-│   │       └── sitemap/        # XML sitemap
-│   ├── components/
-│   │   ├── ui/                 # shadcn/ui primitives
-│   │   ├── Header.tsx          # Navigation bar
-│   │   ├── Hero.tsx            # Animated hero section
-│   │   ├── Footer.tsx
-│   │   ├── BlogGrid.tsx        # Post grid/list view
-│   │   ├── PostCard.tsx        # Post card component
-│   │   ├── PostView.tsx        # Full post reader
-│   │   ├── CodeBlockEnhancer.tsx  # Run button + execution
-│   │   ├── InteractiveGraph.tsx    # D3 knowledge graph
-│   │   ├── WikiLinkPreview.tsx     # Hover preview popovers
-│   │   ├── SearchDialog.tsx        # Command palette search
-│   │   ├── MermaidRenderer.tsx     # Mermaid diagram renderer
-│   │   ├── DesktopToc.tsx          # Table of contents (desktop)
-│   │   ├── MobileTocDrawer.tsx     # Table of contents (mobile)
-│   │   ├── ReadingProgress.tsx     # Reading progress bar
-│   │   ├── ReadingStats.tsx        # Streak & articles read
-│   │   ├── BookmarkButton.tsx      # Bookmark toggle
-│   │   └── ...
-│   ├── hooks/
-│   │   └── use-mobile.ts      # Mobile detection
-│   └── lib/
-│       ├── content.ts          # Markdown file I/O & parsing
-│       ├── bookmarks.ts        # Bookmark management (localStorage)
-│       ├── reading-history.ts  # Reading streaks & history
-│       ├── rehype-wiki-links.ts    # Wiki-link rehype plugin
-│       ├── transform-ink-embeds.ts # Ink SVG post-processor
-│       └── utils.ts            # Utility functions
-├── package.json
-├── next.config.ts
-├── tailwind.config.ts
-├── tsconfig.json
-└── eslint.config.mjs
-```
-
----
-
-## Getting Started
+## 🚀 Quick Start — Run Locally
 
 ### Prerequisites
 
-- [Bun](https://bun.sh) (recommended) or Node.js 18+
-- [Obsidian](https://obsidian.md) (recommended, for writing)
+- **[Node.js](https://nodejs.org)** v18+ installed (check: `node --version`)
+- **Git** installed
 
-### Installation
+> **All commands below are shown for both Windows (PowerShell) and Mac/Linux.** Use the tab that matches your system.
 
-```bash
-# 1. Clone the repository
+---
+
+### Step 1: Clone the Repository
+
+**Windows (PowerShell):**
+```powershell
 git clone https://github.com/xnocode/second-brain.git
 cd second-brain
-
-# 2. Install dependencies
-bun install
-
-# 3. Initialize the database
-bun run db:push
-
-# 4. Start the development server
-bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see your site. The sample posts in `content/posts/` will appear immediately.
+**Mac/Linux:**
+```bash
+git clone https://github.com/xnocode/second-brain.git
+cd second-brain
+```
 
-### Development
+---
+
+### Step 2: Rename the Folder
+
+Rename `second-brain` to your own project name. This keeps things clean and avoids confusion if you have multiple projects.
+
+**Windows (PowerShell):**
+```powershell
+# Go back one level, then rename
+cd ..
+Rename-Item -Path "second-brain" -NewName "my-brain"
+cd my-brain
+```
+
+**Mac/Linux:**
+```bash
+cd ..
+mv second-brain my-brain
+cd my-brain
+```
+
+> **Tip:** You can name it anything — `bro-code`, `my-notes`, `knowledge-base`, etc.
+
+---
+
+### Step 3: Install Dependencies
+
+This downloads all required packages. Takes about 30-60 seconds.
 
 ```bash
-# Start dev server (hot reload)
-bun run dev
-
-# Sync Obsidian vault + start dev server
-bun run preview
-
-# Preview sync without making changes
-bun run preview:check
-
-# Lint
-bun run lint
-
-# Build for production
-bun run build
-
-# Start production server
-bun run start
+npm install
 ```
 
-The code runner mini-service (for local C++/Java/Rust execution) starts automatically in development. It requires compilers to be installed on your system (`gcc`, `g++`, `python3`, `ruby`, `java`, `rustc`, `go`).
+> Same command on all platforms. If you have `bun` installed, you can use `bun install` instead.
 
 ---
 
-## Writing Posts
+### Step 4: Create the .env File
 
-Posts are standard markdown files in `content/posts/`. Each file needs YAML frontmatter at the top.
+The `.env` file stores your database path. **This step is different on Windows vs Mac/Linux.**
 
-### Frontmatter
-
-```yaml
----
-title: "Your Post Title"          # Required — displayed as heading and in cards
-date: 2025-06-28                  # Required — YYYY-MM-DD format
-tags: ["tag1", "tag2", "tag3"]    # Required — array of strings
-category: "Guide"                 # Required — groups posts in categories
-draft: false                      # Required — true skips the post
-excerpt: "A brief description."   # Optional — shown in cards and SEO
-cover: "/covers/my-cover.png"    # Optional — hero image on post cards
-author: "Your Name"               # Optional — displayed below the title
----
+**Windows (PowerShell) — ⚠️ MUST use this exact command:**
+```powershell
+Set-Content -Path .env -Value "DATABASE_URL=file:./db/custom.db" -NoNewline
 ```
 
-The filename becomes the URL slug. For example, `content/posts/my-post.md` is accessible at `/post/my-post`.
+> **Why not `echo`?** PowerShell's `echo` adds invisible BOM characters that break Prisma. Always use `Set-Content -NoNewline`.
 
-### Wiki-Links
-
-Connect your posts together using Obsidian-style wiki-links:
-
-```markdown
-Check out my [[setup-guide]] for installation instructions.
-
-I also wrote about [[code-playground|the code playground feature]].
+**Mac/Linux:**
+```bash
+echo "DATABASE_URL=file:./db/custom.db" > .env
 ```
 
-- `[[slug]]` — links to the post with that filename slug
-- `[[slug|display text]]` — custom link text
-- Links to non-existent posts get a broken-link style
-- **Hover preview**: hovering a wiki-link shows a floating card with the post's title, date, excerpt, and tags
+**Verify the file was created:**
+```bash
+# Windows
+Get-Content .env
 
-### Code Blocks
-
-Standard fenced code blocks work automatically. Add the language identifier and the playground activates:
-
-````markdown
-```python
-def greet(name):
-    print(f"Hello, {name}!")
-
-greet("World")
+# Mac/Linux
+cat .env
 ```
-
-```cpp
-#include <iostream>
-int main() {
-    std::cout << "Hello from C++!" << std::endl;
-    return 0;
-}
-```
-````
-
-**Supported languages for the Run button:**
-Python, JavaScript, TypeScript, C, C++, Java, Rust, Go, Ruby, PHP, Bash, Kotlin, Scala, Lua, R, Swift
-
-**Stdin input:** Every runnable code block includes an "Input (stdin)" textarea. Type input values there before clicking Run:
-
-````markdown
-```python
-name = input("What is your name? ")
-print(f"Hello, {name}!")
-```
-````
-
-Readers type `Alice` in the input field, click Run, and see `What is your name? Hello, Alice!`
-
-### Math (KaTeX)
-
-Inline math with single `$` and block math with `$$`:
-
-```markdown
-The equation $E = mc^2$ changed physics forever.
-
-$$
-\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
-$$
-```
-
-### Diagrams (Mermaid)
-
-```markdown
-```mermaid
-graph TD
-    A[Write in Obsidian] --> B[Sync to blog/]
-    B --> C[Build & Deploy]
-    C --> D[Live on Vercel]
-```
-```
-
-Supports all Mermaid diagram types: flowcharts, sequence diagrams, Gantt charts, pie charts, class diagrams, state diagrams, and more.
-
-### Media Embeds
-
-**Images** — standard markdown syntax:
-
-```markdown
-![Alt text](/images/my-image.png)
-```
-
-**YouTube/Vimeo** — paste the URL on its own line:
-
-```markdown
-https://www.youtube.com/watch?v=dQw4w9WgXcQ
-```
-
-Renders as a thumbnail with a play button. The iframe loads only when the reader clicks play (lazy loading).
-
-**Audio** — link to `.mp3`, `.wav`, `.ogg` files:
-
-```markdown
-![Podcast Episode](/audio/episode-1.mp3)
-```
-
-**PDF** — link to `.pdf` files:
-
-```markdown
-[Whitepaper](/docs/whitepaper.pdf)
-```
-
-### Obsidian Ink
-
-The [Obsidian Ink](https://github.com/obsidian-community/obsidian-ink) plugin lets you draw freehand in notes. The blog renders frozen Ink drawings as inline SVG that adapts to dark and light themes.
-
-1. Install the Ink community plugin in Obsidian
-2. Create `blog/Ink/` directory
-3. Use "New handwriting section" from the command palette
-4. **Freeze** the drawing (required — the blog renders static SVG, not live canvases)
-5. The sync script copies Ink assets to `public/images/ink/`
+You should see: `DATABASE_URL=file:./db/custom.db`
 
 ---
 
-## Obsidian Workflow
+### Step 5: Setup Database
 
-Second Brain is designed to work seamlessly with [Obsidian](https://obsidian.md) as your writing environment.
-
-### Setup
-
-1. Create a `blog/` folder in your project root (alongside `src/`, `public/`, etc.)
-2. Open Obsidian → **Open folder as vault** → select your `blog/` directory
-3. Create markdown files with proper frontmatter (see [Writing Posts](#writing-posts))
-4. Paste images — they save to `blog/attachments/` automatically
-
-**Recommended Obsidian settings:**
-- **Files and Links → Default location for new attachments**: "In the folder specified below" → `blog/attachments`
-- **Files and Links → New link format**: "Shortest path when possible"
-- **Editor → Default editing mode**: "Source mode" (recommended for wiki-link visibility)
-
-### Daily Publishing
-
-Your workflow is: **write in Obsidian → sync → preview → push → auto-deploy**
+This creates the SQLite database file and all required tables.
 
 ```bash
-# 1. Write/ edit posts in Obsidian (blog/ folder)
-
-# 2. Sync vault to content/posts/
-bun run scripts/sync-vault.ts
-
-# 3. Preview locally
-bun run dev
-
-# 4. Publish (sync + commit + push)
-bun run publish
+npx prisma db push
 ```
 
-Vercel detects the push and automatically rebuilds and redeploys your site. Your changes are live in ~30 seconds.
+You should see output like:
+```
+🚀 Your database is now in sync with your Prisma schema.
+```
 
-### Sync Script Details
-
-The `scripts/sync-vault.ts` script handles the bridge between Obsidian and your blog:
-
-**What it does:**
-1. Reads all `.md` files from the `blog/` folder (root level only)
-2. Validates frontmatter (requires `title`, `date`, `tags`, `draft`)
-3. Converts Obsidian syntax to standard markdown:
-   - `![[image.png]]` → `![image.png](/images/image.png)`
-   - `[[Note Title]]` → `[[slug]]` (title-based to slug-based wiki-links)
-4. Copies images from `blog/attachments/` to `public/images/`
-5. Copies Ink drawings from `blog/Ink/` to `public/images/ink/`
-6. Writes processed files to `content/posts/{slug}.md`
-
-**Flags:**
-| Flag | Description |
-|------|-------------|
-| (none) | Sync vault to content/posts/ |
-| `--clean` | Also remove posts that no longer exist in the vault |
-| `--dry-run` | Preview what would change, without modifying files |
-| `--source /path` | Use a different vault folder instead of `blog/` |
-
-**CI-safe:** On Vercel, `blog/` doesn't exist (it's gitignored). The sync script detects this and exits silently since `content/posts/` already contains the synced files from git.
+> This creates a `db/custom.db` file (automatically git-ignored).
 
 ---
 
-## Deployment
+### Step 6: Run Locally
 
-### Vercel (Recommended)
+Start the development server.
 
-Free, automatic deployments, global CDN. No configuration needed.
+**Windows (PowerShell):**
+```powershell
+npx next dev -p 3000
+```
 
-**One-time setup:**
+**Mac/Linux:**
+```bash
+npx next dev -p 3000
+```
 
-1. Push your repository to GitHub
-2. Go to [vercel.com](https://vercel.com) → sign in with GitHub
-3. Click **Add New > Project** → select your repository
-4. Vercel auto-detects Next.js. Set the **Build Command** to:
+> **Note:** On Windows, don't use `npm run dev` if the script pipes to `tee` (that command doesn't exist on Windows). Use `npx next dev -p 3000` directly.
+
+You'll see output like:
+```
+  ▲ Next.js 16.x
+  - Local:        http://localhost:3000
+  - Environments: .env
+```
+
+---
+
+### Step 7: Open in Browser
+
+Go to **http://localhost:3000** — your Second Brain is running! 🎉
+
+---
+
+## 📝 Writing Posts
+
+Place your markdown files in the **`content/posts/`** folder. Each post needs YAML frontmatter at the top:
+
+```markdown
+---
+title: "Your Post Title"
+date: 2025-01-15
+category: "Guide"
+tags: [obsidian, markdown, productivity]
+excerpt: "A short description of your post"
+---
+
+# Your Post Content
+
+Write in **Markdown** as usual. Supports:
+- **Bold**, *italic*, `code`
+- [Links](https://example.com)
+- Lists, blockquotes, tables
+- Code blocks with syntax highlighting
+- LaTeX math: $$E = mc^2$$
+- Mermaid diagrams
+- Wiki-style [[links]] to other posts
+```
+
+### Available Categories
+`Guide`, `Knowledge`, `Design`, `Thinking`, `Tools`, or any custom category you create.
+
+---
+
+## 📤 Push to Your Own GitHub
+
+Want to customize and host your own version? Follow these steps:
+
+### Step 1: Create a New Repository on GitHub
+
+Go to **[github.com/new](https://github.com/new)** → Create a new **empty** repository (don't initialize with README, .gitignore, or license).
+
+### Step 2: Remove Old Remote and Add Yours
+
+**Windows (PowerShell):**
+```powershell
+git init
+git add .
+git commit -m "Initial commit - My Second Brain"
+git branch -M main
+git remote add origin https://github.com/YOUR-USERNAME/YOUR-REPO-NAME.git
+git push -u origin main
+```
+
+**Mac/Linux:**
+```bash
+git init
+git add .
+git commit -m "Initial commit - My Second Brain"
+git branch -M main
+git remote add origin https://github.com/YOUR-USERNAME/YOUR-REPO-NAME.git
+git push -u origin main
+```
+
+### Using GitHub CLI (One Command)
+
+If you have [GitHub CLI (`gh`)](https://cli.github.com) installed, you can create the repo and push in one command:
 
 ```bash
-bun run scripts/sync-vault.ts && bun run build
+gh repo create YOUR-REPO-NAME --public --source=. --push
 ```
 
-5. Leave everything else as default → Click **Deploy**
+### Step 3: Verify
 
-That's it. Every push to `main` triggers an automatic rebuild.
+Go to your GitHub repo page — you should see all your files. The `db/` folder, `.env` file, and `node_modules/` are automatically excluded by `.gitignore`.
 
-**Custom domain:** Go to Settings → Domains → add your domain. Vercel handles DNS and HTTPS automatically.
+---
 
-**No environment variables needed** — the blog works out of the box. Code execution uses free public APIs (Pyodide for Python in the browser, Judge0 CE public instance for compiled languages).
+## 🌐 Deploy to Vercel (Live Site)
 
-### Docker
+### Method 1: One-Click Deploy (Easiest)
 
-The project includes a Dockerfile for the code runner mini-service. To run the full stack:
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/xnocode/second-brain&env=DATABASE_URL,file:./db/custom.db)
+
+### Method 2: Manual Deploy
+
+1. Go to **[vercel.com](https://vercel.com)** → Sign in with **GitHub**
+2. Click **"Add New Project"**
+3. Import your repository
+4. Add **Environment Variable**:
+   - **Name:** `DATABASE_URL`
+   - **Value:** `file:./db/custom.db`
+5. Click **Deploy**
+
+Your site will be live at `https://your-project.vercel.app` (or your custom domain).
+
+> **Note:** Every time you push to GitHub, Vercel automatically redeploys your site!
+
+---
+
+## 🔄 Update Your Live Site
+
+Once your site is connected to Vercel, updating is simple:
+
+### Option A: Edit on GitHub (No Terminal Needed) ✨ Easiest
+
+1. Go to your repo on **GitHub**
+2. Click on any file to edit it directly in the browser
+3. Edit `content/posts/` to add or modify articles
+4. Click **"Commit changes"** → Vercel auto-deploys within 1-2 minutes
+
+### Option B: Edit Locally and Push
+
+1. Make changes on your computer
+2. Add new posts to `content/posts/`
+3. Push to GitHub:
 
 ```bash
-# Build and start the code runner (supports C++, Java, Rust, Go, Ruby)
-docker build -t code-runner mini-services/code-runner/
-docker run -d -p 3005:3005 --name code-runner code-runner
-
-# Build and start the Next.js app
-bun run build
-bun run start
+git add .
+git commit -m "Updated content"
+git push
 ```
 
-### Any Node.js Host
+4. Vercel detects the push and redeploys automatically ✅
 
-The production build is a standalone Next.js server that only needs Bun or Node.js to run:
+### Adding New Blog Posts
 
+Just create a new `.md` file in `content/posts/`:
+
+```
+content/posts/
+  my-new-post.md      ← Add this
+  another-article.md  ← And this
+```
+
+Each file needs frontmatter (title, date, category, tags, excerpt). That's it!
+
+---
+
+## 🍴 Fork Option (No Terminal)
+
+If you're not comfortable with the terminal at all:
+
+1. Go to the repo on GitHub
+2. Click the **"Fork"** button (top right)
+3. This creates a copy under your GitHub account
+4. Go to **Vercel** → Import your forked repo
+5. Add `DATABASE_URL=file:./db/custom.db` as environment variable
+6. Click **Deploy**
+
+To edit content, use GitHub's built-in editor directly in your browser. Every commit auto-deploys via Vercel.
+
+---
+
+## 📁 Project Structure
+
+```
+second-brain/
+├── content/posts/          # Your markdown blog posts
+├── prisma/
+│   └── schema.prisma       # Database schema
+├── public/
+│   ├── logo.png            # Site logo
+│   └── robots.txt
+├── src/
+│   ├── app/
+│   │   ├── page.tsx        # Main page (blog, about, post views)
+│   │   ├── post/[slug]/    # Individual post pages
+│   │   └── api/            # API routes (posts, search, graph, etc.)
+│   ├── components/         # React components
+│   ├── hooks/              # Custom React hooks
+│   └── lib/                # Utilities and database client
+├── .env.example            # Environment template
+├── .gitignore
+├── package.json
+├── tailwind.config.ts
+└── README.md
+```
+
+---
+
+## 🔮 Obsidian Workflow
+
+1. **Write** your notes in Obsidian as usual
+2. Add YAML frontmatter to notes you want to publish
+3. Copy published notes to `content/posts/`
+4. Preview locally with `npx next dev -p 3000`
+5. Push to GitHub → Vercel deploys automatically
+
+Your vault is the source of truth. The website is just a beautiful window into your published thoughts.
+
+---
+
+## 🔧 Troubleshooting
+
+### `DATABASE_URL` not found by Prisma
+- **Windows:** Make sure you used `Set-Content -NoNewline`. Regular `echo` adds invisible characters.
+- **Mac/Linux:** Make sure the file was created with `echo "..." > .env`
+
+### `prisma db push` fails
+- Ensure your `.env` file is in the **root** of the project (same folder as `package.json`)
+- Make sure `DATABASE_URL` has no extra spaces or quotes
+
+### `npx next dev` fails
+- Make sure you ran `npm install` first
+- Ensure Node.js v18+ is installed: `node --version`
+- On Windows, use `npx next dev -p 3000` directly (not `npm run dev` if it pipes to `tee`)
+
+### Port 3000 already in use
+- Another process is using port 3000. Kill it or use a different port:
 ```bash
-bun run build    # Creates .next/standalone/
-bun run start    # Runs the standalone server
+npx next dev -p 3001
 ```
 
-Copy the `.next/standalone/` directory, `public/`, and `content/posts/` to any server with Bun or Node.js installed.
+### Git push fails with "Repository not found"
+- Make sure you **created the repo on GitHub first** before pushing
+- The repo must be empty (no README, no .gitignore) on GitHub before the first push
 
 ---
 
-## Configuration
+## 📜 License
 
-### Environment Variables
-
-All environment variables are **optional**. The blog works without any of them.
-
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `JUDGE0_API_KEY` | No | — | RapidAPI key for Judge0 CE (adds a more reliable code execution backend). Get one free at [rapidapi.com](https://rapidapi.com) — subscribe to "Judge0 CE" (100 runs/day free tier) |
-| `JUDGE0_HOST` | No | `https://judge0-ce.p.rapidapi.com` | Custom Judge0 CE host (only used with `JUDGE0_API_KEY`) |
-| `CODE_RUNNER_URL` | No | `http://127.0.0.1:3005/execute` | Local code runner URL (only used in development) |
-
-### Customization
-
-**Site metadata** — edit `src/app/layout.tsx`:
-
-```tsx
-export const metadata: Metadata = {
-  title: "Second Brain",
-  description: "Your tagline here",
-  // ...
-};
-```
-
-**Colors and theme** — edit CSS variables in `src/app/globals.css`:
-
-```css
-:root {
-  --accent-gold: #e2b340;
-  --accent-gold-hover: #f0c850;
-  /* ... more variables */
-}
-```
-
-**Cover images** — place images in `public/covers/` and reference them in frontmatter:
-
-```yaml
-cover: "/covers/my-cover.png"
-```
-
-**Remove sample posts** — delete files in `content/posts/` and add your own.
+MIT — Use it, modify it, make it yours.
 
 ---
 
-## Scripts Reference
-
-| Command | Description |
-|---------|-------------|
-| `bun run dev` | Start development server with hot reload (port 3000) |
-| `bun run build` | Build for production (standalone output) |
-| `bun run start` | Start production server |
-| `bun run lint` | Run ESLint |
-| `bun run preview` | Sync Obsidian vault + start dev server |
-| `bun run preview:check` | Preview sync changes without modifying files |
-| `bun run publish` | Sync vault + commit + push (full publish workflow) |
-| `bun run publish:check` | Dry-run publish (preview only) |
-| `bun run db:push` | Push Prisma schema to SQLite database |
-| `bun run db:generate` | Generate Prisma client |
-
----
-
-## 📄 License
-
-This project is open source and available under the MIT License.
+<p align="center">
+  Built with ❤️ by <a href="https://github.com/xnocode">xnocode</a>
+</p>
