@@ -773,57 +773,192 @@ export default function HomePage() {
                       </p>
                     </div>
                   </div>
-
                   {/* How it works */}
                   <div className="mb-16">
-                    <h2 className="text-h3 text-[var(--text-primary)] mb-8 text-center">
+                    <h2 className="text-h3 text-[var(--text-primary)] mb-3 text-center">
                       How It Works
                     </h2>
+                    <p className="text-sm text-[var(--text-secondary)] text-center mb-10 max-w-xl mx-auto leading-relaxed">
+                      Get your own Second Brain running in under 2 minutes. Clone, install, create one env file, and you're live.
+                    </p>
+
+                    {/* Step cards with commands */}
                     <div className="space-y-6">
-                      {[
-                        {
-                          step: "01",
-                          title: "Write in Obsidian",
-                          description:
-                            "Create markdown files in your blog/ folder using Obsidian or any editor. Add YAML frontmatter with title, date, tags, category, and set draft: false to publish.",
-                        },
-                        {
-                          step: "02",
-                          title: "Sync & Preview",
-                          description:
-                            "Run `bun run scripts/sync-vault.ts` to process your posts, then `bun run dev` to preview everything locally. Verify it looks right before going live.",
-                        },
-                        {
-                          step: "03",
-                          title: "Go Live",
-                          description:
-                            "Run `bun run publish` — it syncs your posts, commits, and pushes to GitHub. Vercel auto-deploys. Your Second Brain is live.",
-                        },
-                      ].map((item, i) => (
-                        <motion.div
-                          key={item.step}
-                          initial={{ opacity: 0, y: 16 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{
-                            delay: 0.1 + i * 0.1,
-                            duration: 0.5,
-                            ease: [0.22, 1, 0.36, 1],
-                          }}
-                          className="flex gap-6 items-start rounded-xl border border-[var(--border-subtle)] glass p-6 sm:p-8 hover:border-[rgba(226,179,64,0.2)] transition-colors duration-300"
-                        >
+                      {/* Step 1: Clone & Rename */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.05, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                        className="rounded-xl border border-[var(--border-subtle)] glass overflow-hidden hover:border-[rgba(226,179,64,0.2)] transition-colors duration-300"
+                      >
+                        <div className="flex items-start gap-4 sm:gap-6 p-6 sm:p-8">
                           <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--accent-gold-muted)] text-[var(--accent-gold)] font-bold text-lg">
-                            {item.step}
+                            01
                           </div>
-                          <div>
-                            <h3 className="text-base font-semibold text-[var(--text-primary)] mb-2">
-                              {item.title}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1">
+                              Clone & Rename
                             </h3>
-                            <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-                              {item.description}
+                            <p className="text-sm text-[var(--text-secondary)] mb-4 leading-relaxed">
+                              Clone the repository, then rename the folder to your own project name.
                             </p>
+                            <div className="rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border-subtle)] overflow-hidden">
+                              <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--border-subtle)]">
+                                <div className="h-2.5 w-2.5 rounded-full bg-red-500/60" />
+                                <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/60" />
+                                <div className="h-2.5 w-2.5 rounded-full bg-green-500/60" />
+                                <span className="ml-2 text-[10px] text-[var(--text-faint)] font-mono">Terminal</span>
+                              </div>
+                              <pre className="p-4 text-xs sm:text-sm text-[var(--text-secondary)] font-mono leading-relaxed overflow-x-auto"><code>{`# Clone the repo
+git clone https://github.com/xnocode/second-brain.git
+cd second-brain
+
+# Rename to your own project name
+# Windows PowerShell:
+cd ..
+Rename-Item -Path "second-brain" -NewName "my-brain"
+cd my-brain
+
+# Mac/Linux:
+# cd ..
+# mv second-brain my-brain
+# cd my-brain`}</code></pre>
+                            </div>
                           </div>
-                        </motion.div>
-                      ))}
+                        </div>
+                      </motion.div>
+
+                      {/* Step 2: Install & .env */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.15, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                        className="rounded-xl border border-[var(--border-subtle)] glass overflow-hidden hover:border-[rgba(226,179,64,0.2)] transition-colors duration-300"
+                      >
+                        <div className="flex items-start gap-4 sm:gap-6 p-6 sm:p-8">
+                          <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--accent-gold-muted)] text-[var(--accent-gold)] font-bold text-lg">
+                            02
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1">
+                              Install Dependencies & Create .env
+                            </h3>
+                            <p className="text-sm text-[var(--text-secondary)] mb-4 leading-relaxed">
+                              Install all packages, then create the environment file for the database. <strong className="text-[var(--text-primary)]">Windows users:</strong> always use <code className="text-[var(--accent-gold)] text-xs">Set-Content -NoNewline</code> — regular <code className="text-xs text-red-400/80">echo</code> adds invisible characters that break Prisma.
+                            </p>
+                            <div className="rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border-subtle)] overflow-hidden">
+                              <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--border-subtle)]">
+                                <div className="h-2.5 w-2.5 rounded-full bg-red-500/60" />
+                                <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/60" />
+                                <div className="h-2.5 w-2.5 rounded-full bg-green-500/60" />
+                                <span className="ml-2 text-[10px] text-[var(--text-faint)] font-mono">Terminal</span>
+                              </div>
+                              <pre className="p-4 text-xs sm:text-sm text-[var(--text-secondary)] font-mono leading-relaxed overflow-x-auto"><code>{`# Install packages (same on all platforms)
+npm install
+
+# Create .env file
+# Windows PowerShell (REQUIRED):
+Set-Content -Path .env -Value "DATABASE_URL=file:./db/custom.db" -NoNewline
+
+# Mac/Linux:
+# echo "DATABASE_URL=file:./db/custom.db" > .env`}</code></pre>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+
+                      {/* Step 3: Database & Run */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.25, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                        className="rounded-xl border border-[var(--border-subtle)] glass overflow-hidden hover:border-[rgba(226,179,64,0.2)] transition-colors duration-300"
+                      >
+                        <div className="flex items-start gap-4 sm:gap-6 p-6 sm:p-8">
+                          <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--accent-gold-muted)] text-[var(--accent-gold)] font-bold text-lg">
+                            03
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1">
+                              Setup Database & Run
+                            </h3>
+                            <p className="text-sm text-[var(--text-secondary)] mb-4 leading-relaxed">
+                              Initialize the SQLite database, then start the dev server. Your site will be live at <code className="text-[var(--accent-gold)] text-xs">http://localhost:3000</code>.
+                            </p>
+                            <div className="rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border-subtle)] overflow-hidden">
+                              <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--border-subtle)]">
+                                <div className="h-2.5 w-2.5 rounded-full bg-red-500/60" />
+                                <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/60" />
+                                <div className="h-2.5 w-2.5 rounded-full bg-green-500/60" />
+                                <span className="ml-2 text-[10px] text-[var(--text-faint)] font-mono">Terminal</span>
+                              </div>
+                              <pre className="p-4 text-xs sm:text-sm text-[var(--text-secondary)] font-mono leading-relaxed overflow-x-auto"><code>{`# Setup the database
+npx prisma db push
+
+# Start the dev server
+# Windows PowerShell:
+npx next dev -p 3000
+
+# Mac/Linux:
+# npm run dev
+# (or: npx next dev -p 3000)
+
+# Open http://localhost:3000 in your browser 🎉`}</code></pre>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+
+                      {/* Step 4: Deploy */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.35, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                        className="rounded-xl border border-[var(--border-subtle)] glass overflow-hidden hover:border-[rgba(226,179,64,0.2)] transition-colors duration-300"
+                      >
+                        <div className="flex items-start gap-4 sm:gap-6 p-6 sm:p-8">
+                          <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--accent-gold-muted)] text-[var(--accent-gold)] font-bold text-lg">
+                            04
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1">
+                              Push to GitHub & Deploy to Vercel
+                            </h3>
+                            <p className="text-sm text-[var(--text-secondary)] mb-4 leading-relaxed">
+                              Create a GitHub repo, push your code, then connect to Vercel for automatic deployments. Every push to GitHub auto-deploys.
+                            </p>
+                            <div className="rounded-lg bg-[var(--bg-surface-2)] border border-[var(--border-subtle)] overflow-hidden">
+                              <div className="flex items-center gap-2 px-4 py-2 border-b border-[var(--border-subtle)]">
+                                <div className="h-2.5 w-2.5 rounded-full bg-red-500/60" />
+                                <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/60" />
+                                <div className="h-2.5 w-2.5 rounded-full bg-green-500/60" />
+                                <span className="ml-2 text-[10px] text-[var(--text-faint)] font-mono">Terminal</span>
+                              </div>
+                              <pre className="p-4 text-xs sm:text-sm text-[var(--text-secondary)] font-mono leading-relaxed overflow-x-auto"><code>{`# 1. Create your repo on github.com/new (leave it empty)
+
+# 2. Push your code
+git init
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git remote add origin https://github.com/YOUR-USERNAME/YOUR-REPO.git
+git push -u origin main
+
+# 3. On Vercel: Import repo → Add DATABASE_URL env var → Deploy
+# 4. Every git push auto-deploys! ✅`}</code></pre>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    </div>
+
+                    {/* Quick note for non-technical users */}
+                    <div className="mt-8 rounded-xl border border-[rgba(226,179,64,0.15)] bg-[rgba(226,179,64,0.03)] p-6 text-center">
+                      <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                        <span className="text-[var(--accent-gold)] font-semibold">No terminal?</span> You can also{" "}
+                        <span className="text-[var(--text-primary)] font-medium">Fork</span> this repo on GitHub and deploy directly to Vercel — all editing happens in your browser.
+                        See the full guide in the <span className="text-[var(--text-primary)] font-medium">README.md</span>.
+                      </p>
                     </div>
                   </div>
 

@@ -1,6 +1,6 @@
 ---
 title: "Complete Setup Guide: From Clone to Live in 5 Minutes"
-date: 2025-01-20
+date: 2024-01-20
 category: "Guide"
 tags: [setup, tutorial, windows, deployment, vercel, github]
 excerpt: "Step-by-step guide to set up your own Second Brain — clone, install, run locally, push to GitHub, and deploy to Vercel. Includes Windows PowerShell and Mac/Linux commands for every step."
