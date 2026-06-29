@@ -1,124 +1,152 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
   <defs>
+    <!-- Primary gold gradient -->
     <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#f5d76e"/>
-      <stop offset="50%" stop-color="#e2b340"/>
-      <stop offset="100%" stop-color="#c49a18"/>
+      <stop offset="0%" stop-color="#FFE082"/>
+      <stop offset="28%" stop-color="#FFCA28"/>
+      <stop offset="55%" stop-color="#D4A017"/>
+      <stop offset="100%" stop-color="#A67C00"/>
     </linearGradient>
-    <linearGradient id="goldDim" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#e2b340" stop-opacity="0.7"/>
-      <stop offset="100%" stop-color="#b8920e" stop-opacity="0.7"/>
+    <!-- Left hemisphere gold (light source from top-left) -->
+    <linearGradient id="goldL" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="#FFE082"/>
+      <stop offset="35%" stop-color="#FFC107"/>
+      <stop offset="70%" stop-color="#D4A017"/>
+      <stop offset="100%" stop-color="#996515"/>
     </linearGradient>
-    <radialGradient id="glowBg" cx="50%" cy="35%" r="40%">
-      <stop offset="0%" stop-color="#e2b340" stop-opacity="0.06"/>
-      <stop offset="100%" stop-color="#e2b340" stop-opacity="0"/>
+    <!-- Right hemisphere gold (slightly darker — away from light) -->
+    <linearGradient id="goldR" x1="0.2" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFD54F"/>
+      <stop offset="40%" stop-color="#D4A017"/>
+      <stop offset="75%" stop-color="#B8860B"/>
+      <stop offset="100%" stop-color="#8B6914"/>
+    </linearGradient>
+    <!-- Specular highlight -->
+    <linearGradient id="spec" x1="0" y1="0" x2="0.6" y2="0.8">
+      <stop offset="0%" stop-color="#FFFDE7" stop-opacity="0.55"/>
+      <stop offset="50%" stop-color="#FFE082" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#FFE082" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Shadow gradient -->
+    <linearGradient id="shd" x1="0.8" y1="0.8" x2="0" y2="0">
+      <stop offset="0%" stop-color="#5C3D00" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#8B6914" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Crown gradient -->
+    <linearGradient id="crown" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#FFF8E1"/>
+      <stop offset="40%" stop-color="#FFE082"/>
+      <stop offset="100%" stop-color="#C49000"/>
+    </linearGradient>
+    <!-- Stem gradient -->
+    <linearGradient id="stem" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#C49000"/>
+      <stop offset="100%" stop-color="#7A5A0A"/>
+    </linearGradient>
+    <!-- Ring gradient -->
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFE082"/>
+      <stop offset="50%" stop-color="#C49000"/>
+      <stop offset="100%" stop-color="#8B6914"/>
+    </linearGradient>
+    <!-- Background radial -->
+    <radialGradient id="bg" cx="50%" cy="42%" r="68%">
+      <stop offset="0%" stop-color="#151515"/>
+      <stop offset="100%" stop-color="#070707"/>
     </radialGradient>
+    <!-- Glow filter -->
     <filter id="glow">
+      <feGaussianBlur stdDeviation="1.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <!-- Large ambient glow -->
+    <filter id="ambientGlow">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+    <!-- Subtle outer glow for crown -->
+    <filter id="crownGlow">
       <feGaussianBlur stdDeviation="2.5" result="b"/>
       <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
-    <filter id="softGlow">
-      <feGaussianBlur stdDeviation="5"/>
-    </filter>
   </defs>
 
-  <!-- Background -->
-  <rect x="2" y="2" width="116" height="116" rx="26" fill="#0c0c0c"/>
-  <rect x="2" y="2" width="116" height="116" rx="26" fill="none" stroke="#1e1e1e" stroke-width="1"/>
-  <!-- Subtle radial glow -->
-  <rect x="2" y="2" width="116" height="116" rx="26" fill="url(#glowBg)"/>
+  <!-- ════════════ BACKGROUND ════════════ -->
+  <rect width="120" height="120" rx="26" fill="url(#bg)"/>
+  <!-- Outer border — single elegant stroke -->
+  <rect width="120" height="120" rx="26" fill="none" stroke="url(#ring)" stroke-width="0.7" opacity="0.18"/>
 
-  <!-- ── Network connections ── -->
-  <g stroke="#e2b340" fill="none" stroke-linecap="round">
+  <!-- ════════════ AMBIENT GLOW ════════════ -->
+  <ellipse cx="60" cy="50" rx="38" ry="40" fill="#D4A017" opacity="0.045" filter="url(#ambientGlow)"/>
 
-    <!-- Outer hemisphere outlines (dim) -->
-    <g stroke-width="1" opacity="0.18">
-      <path d="M60,20 L34,30 Q22,42 24,58 Q28,72 42,76"/>
-      <path d="M60,20 L86,30 Q98,42 96,58 Q92,72 78,76"/>
-      <path d="M42,76 Q50,82 60,78 Q70,82 78,76"/>
-      <line x1="60" y1="78" x2="60" y2="95"/>
-    </g>
+  <!-- ════════════ DECORATIVE RINGS ════════════ -->
+  <circle cx="60" cy="52" r="48" fill="none" stroke="url(#ring)" stroke-width="1.3" opacity="0.1"/>
+  <circle cx="60" cy="52" r="45.5" fill="none" stroke="url(#ring)" stroke-width="0.35" opacity="0.06"/>
 
-    <!-- Internal network (brighter) -->
-    <g stroke-width="1.2" opacity="0.32">
-      <!-- Top to center -->
-      <line x1="60" y1="20" x2="60" y2="42"/>
-      <!-- Upper sides to inner nodes -->
-      <line x1="34" y1="30" x2="46" y2="42"/>
-      <line x1="86" y1="30" x2="74" y2="42"/>
-      <!-- Mid sides to center -->
-      <line x1="24" y1="52" x2="44" y2="52"/>
-      <line x1="96" y1="52" x2="76" y2="52"/>
-      <!-- Inner cross -->
-      <line x1="46" y1="42" x2="60" y2="42"/>
-      <line x1="74" y1="42" x2="60" y2="42"/>
-      <line x1="44" y1="52" x2="46" y2="42"/>
-      <line x1="76" y1="52" x2="74" y2="42"/>
-      <!-- Inner to lower -->
-      <line x1="46" y1="42" x2="44" y2="58"/>
-      <line x1="74" y1="42" x2="76" y2="58"/>
-      <line x1="44" y1="52" x2="44" y2="58"/>
-      <line x1="76" y1="52" x2="76" y2="58"/>
-      <!-- Lower converge -->
-      <line x1="44" y1="58" x2="60" y2="64"/>
-      <line x1="76" y1="58" x2="60" y2="64"/>
-      <line x1="60" y1="42" x2="60" y2="64"/>
-      <line x1="60" y1="64" x2="60" y2="78"/>
-      <!-- Cross-bridge (hemisphere connection) -->
-      <line x1="46" y1="42" x2="74" y2="42" stroke-dasharray="2,4" opacity="0.6"/>
-      <line x1="44" y1="58" x2="76" y2="58" stroke-dasharray="2,4" opacity="0.6"/>
-    </g>
-
-    <!-- Active pathway (brightest) -->
-    <g stroke-width="1.6" opacity="0.55" filter="url(#glow)">
-      <path d="M34,30 L46,42 L60,42 L60,64 L60,78" stroke="url(#gold)"/>
-    </g>
+  <!-- ════════════ BRAIN HEMISPHERES ════════════ -->
+  <g filter="url(#glow)">
+    <!-- Left hemisphere -->
+    <path d="M57,18 C37,16 14,32 14,52 C14,72 30,86 46,88 L56,82 L56,18 Z"
+          fill="url(#goldL)"/>
+    <!-- Right hemisphere -->
+    <path d="M63,18 C83,16 106,32 106,52 C106,72 90,86 74,88 L64,82 L64,18 Z"
+          fill="url(#goldR)"/>
+    <!-- Brain stem -->
+    <path d="M54,83 Q60,96 66,83" fill="none" stroke="url(#stem)" stroke-width="3.2" stroke-linecap="round"/>
   </g>
 
-  <!-- ── Orbit ring around center node ── -->
-  <circle cx="60" cy="42" r="12" fill="none" stroke="#e2b340" stroke-width="0.6" opacity="0.15" stroke-dasharray="3,5">
-    <animateTransform attributeName="transform" type="rotate" from="0 60 42" to="360 60 42" dur="20s" repeatCount="indefinite"/>
-  </circle>
+  <!-- ════════════ SPECULAR HIGHLIGHTS (3D depth) ════════════ -->
+  <!-- Left hemisphere highlight -->
+  <path d="M57,19 C40,17 18,30 15,48 C15,48 18,28 38,20 C47,17 56,18 56,18 Z"
+        fill="url(#spec)"/>
+  <!-- Right hemisphere highlight (dimmer — further from light) -->
+  <path d="M63,19 C78,17 100,30 103,48 C103,48 100,28 82,20 C73,17 64,18 64,18 Z"
+        fill="url(#spec)" opacity="0.55"/>
 
-  <!-- ── Nodes ── -->
+  <!-- ════════════ SHADOW EDGES ════════════ -->
+  <path d="M14,56 C14,74 30,86 46,88 L42,84 C26,80 16,68 16,52 Z"
+        fill="url(#shd)"/>
+  <path d="M106,56 C106,74 90,86 74,88 L78,84 C94,80 104,68 104,52 Z"
+        fill="url(#shd)"/>
 
-  <!-- Soft glow behind center -->
-  <circle cx="60" cy="42" r="14" fill="#e2b340" opacity="0.07" filter="url(#softGlow)"/>
-
-  <!-- Outer nodes -->
-  <g fill="url(#goldDim)">
-    <circle cx="60" cy="20" r="3"/>
-    <circle cx="34" cy="30" r="2.5"/>
-    <circle cx="86" cy="30" r="2.5"/>
-    <circle cx="24" cy="52" r="2.2"/>
-    <circle cx="96" cy="52" r="2.2"/>
-    <circle cx="30" cy="64" r="1.8" opacity="0.5"/>
-    <circle cx="90" cy="64" r="1.8" opacity="0.5"/>
-    <circle cx="44" cy="72" r="1.8" opacity="0.45"/>
-    <circle cx="76" cy="72" r="1.8" opacity="0.45"/>
-    <circle cx="60" cy="95" r="1.5" opacity="0.3"/>
+  <!-- ════════════ BRAIN FOLDS (Sulci) ════════════ -->
+  <!-- Left hemisphere folds -->
+  <g fill="none" stroke="#7A5A0A" stroke-linecap="round">
+    <path d="M18,38 C32,43 44,40 56,36" stroke-width="0.9" opacity="0.22"/>
+    <path d="M16,52 C32,56 44,54 56,50" stroke-width="0.85" opacity="0.18"/>
+    <path d="M18,66 C32,69 44,66 56,62" stroke-width="0.75" opacity="0.14"/>
+  </g>
+  <!-- Right hemisphere folds -->
+  <g fill="none" stroke="#6B4E08" stroke-linecap="round">
+    <path d="M102,38 C88,43 76,40 64,36" stroke-width="0.9" opacity="0.22"/>
+    <path d="M104,52 C88,56 76,54 64,50" stroke-width="0.85" opacity="0.18"/>
+    <path d="M102,66 C88,69 76,66 64,62" stroke-width="0.75" opacity="0.14"/>
   </g>
 
-  <!-- Inner nodes -->
-  <g fill="url(#gold)">
-    <circle cx="46" cy="42" r="2.8" opacity="0.7"/>
-    <circle cx="74" cy="42" r="2.8" opacity="0.7"/>
-    <circle cx="44" cy="52" r="2.8" opacity="0.65"/>
-    <circle cx="76" cy="52" r="2.8" opacity="0.65"/>
-    <circle cx="44" cy="58" r="2.5" opacity="0.55"/>
-    <circle cx="76" cy="58" r="2.5" opacity="0.55"/>
-    <circle cx="60" cy="64" r="3" opacity="0.65"/>
-    <circle cx="60" cy="78" r="2.5" opacity="0.5"/>
+  <!-- ════════════ CENTRAL FISSURE ════════════ -->
+  <path d="M60,18 C58,30 62,40 60,52 C58,64 62,74 60,82"
+        fill="none" stroke="#0a0a0a" stroke-width="1.1" opacity="0.3"/>
+
+  <!-- ════════════ CROWN DIAMOND ════════════ -->
+  <g filter="url(#crownGlow)">
+    <!-- Diamond body -->
+    <path d="M60,6 L65,13 L60,20 L55,13 Z" fill="url(#crown)"/>
+    <!-- Diamond highlight facet -->
+    <path d="M60,6 L62.5,10.5 L60,15 L57.5,10.5 Z" fill="#FFFDE7" opacity="0.55"/>
   </g>
 
-  <!-- ★ Center node — "the spark" -->
-  <circle cx="60" cy="42" r="6" fill="url(#gold)" filter="url(#glow)">
-    <animate attributeName="r" values="6;7;6" dur="3s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
-  </circle>
-  <circle cx="60" cy="42" r="2.5" fill="#fff8e0" opacity="0.7">
-    <animate attributeName="opacity" values="0.7;0.4;0.7" dur="3s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
-  </circle>
+  <!-- ════════════ NEURAL SPARKLE NODES ════════════ -->
+  <g fill="#FFE082">
+    <circle cx="28" cy="34" r="1.3" opacity="0.35"/>
+    <circle cx="92" cy="34" r="1.3" opacity="0.35"/>
+    <circle cx="18" cy="52" r="1.1" opacity="0.30"/>
+    <circle cx="102" cy="52" r="1.1" opacity="0.30"/>
+    <circle cx="28" cy="70" r="1.0" opacity="0.25"/>
+    <circle cx="92" cy="70" r="1.0" opacity="0.25"/>
+    <circle cx="42" cy="80" r="0.9" opacity="0.20"/>
+    <circle cx="78" cy="80" r="0.9" opacity="0.20"/>
+  </g>
 
-  <!-- "SB" monogram inside center node -->
-  <text x="60" y="43.5" text-anchor="middle" dominant-baseline="central" font-family="system-ui,-apple-system,sans-serif" font-size="6" font-weight="700" fill="#0c0c0c" opacity="0.85" letter-spacing="-0.5">SB</text>
+  <!-- ════════════ CENTER SPARK ════════════ -->
+  <circle cx="60" cy="50" r="2" fill="#FFE082" opacity="0.2"/>
+  <circle cx="60" cy="50" r="1" fill="#FFFDE7" opacity="0.4"/>
 </svg>
