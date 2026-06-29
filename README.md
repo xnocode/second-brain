@@ -24,7 +24,7 @@
 
 ## ✨ Live Demo
 
-👉 **[https://second-brain.vercel.app](https://second-brain.vercel.app)**
+👉 **[https://second-brain-five-xi.vercel.app/](https://second-brain-five-xi.vercel.app/)**
 
 ---
 
