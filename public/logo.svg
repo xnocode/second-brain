@@ -1,152 +1,83 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140" viewBox="0 0 140 140">
   <defs>
-    <!-- Primary gold gradient -->
-    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#FFE082"/>
-      <stop offset="28%" stop-color="#FFCA28"/>
-      <stop offset="55%" stop-color="#D4A017"/>
-      <stop offset="100%" stop-color="#A67C00"/>
-    </linearGradient>
-    <!-- Left hemisphere gold (light source from top-left) -->
-    <linearGradient id="goldL" x1="0" y1="0" x2="0.8" y2="1">
-      <stop offset="0%" stop-color="#FFE082"/>
-      <stop offset="35%" stop-color="#FFC107"/>
-      <stop offset="70%" stop-color="#D4A017"/>
-      <stop offset="100%" stop-color="#996515"/>
-    </linearGradient>
-    <!-- Right hemisphere gold (slightly darker — away from light) -->
-    <linearGradient id="goldR" x1="0.2" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#FFD54F"/>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE066"/>
       <stop offset="40%" stop-color="#D4A017"/>
-      <stop offset="75%" stop-color="#B8860B"/>
       <stop offset="100%" stop-color="#8B6914"/>
     </linearGradient>
-    <!-- Specular highlight -->
-    <linearGradient id="spec" x1="0" y1="0" x2="0.6" y2="0.8">
-      <stop offset="0%" stop-color="#FFFDE7" stop-opacity="0.55"/>
-      <stop offset="50%" stop-color="#FFE082" stop-opacity="0.12"/>
-      <stop offset="100%" stop-color="#FFE082" stop-opacity="0"/>
+    <linearGradient id="goldInner" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A67C00"/>
+      <stop offset="100%" stop-color="#C5A55A"/>
     </linearGradient>
-    <!-- Shadow gradient -->
-    <linearGradient id="shd" x1="0.8" y1="0.8" x2="0" y2="0">
-      <stop offset="0%" stop-color="#5C3D00" stop-opacity="0.35"/>
-      <stop offset="100%" stop-color="#8B6914" stop-opacity="0"/>
+    <linearGradient id="elec" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF5CC"/>
+      <stop offset="100%" stop-color="#D4A017"/>
     </linearGradient>
-    <!-- Crown gradient -->
-    <linearGradient id="crown" x1="0.5" y1="0" x2="0.5" y2="1">
-      <stop offset="0%" stop-color="#FFF8E1"/>
-      <stop offset="40%" stop-color="#FFE082"/>
-      <stop offset="100%" stop-color="#C49000"/>
-    </linearGradient>
-    <!-- Stem gradient -->
-    <linearGradient id="stem" x1="0.5" y1="0" x2="0.5" y2="1">
-      <stop offset="0%" stop-color="#C49000"/>
-      <stop offset="100%" stop-color="#7A5A0A"/>
-    </linearGradient>
-    <!-- Ring gradient -->
-    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#FFE082"/>
-      <stop offset="50%" stop-color="#C49000"/>
-      <stop offset="100%" stop-color="#8B6914"/>
-    </linearGradient>
-    <!-- Background radial -->
-    <radialGradient id="bg" cx="50%" cy="42%" r="68%">
-      <stop offset="0%" stop-color="#151515"/>
-      <stop offset="100%" stop-color="#070707"/>
-    </radialGradient>
-    <!-- Glow filter -->
     <filter id="glow">
-      <feGaussianBlur stdDeviation="1.5" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
     </filter>
-    <!-- Large ambient glow -->
-    <filter id="ambientGlow">
-      <feGaussianBlur stdDeviation="10"/>
+    <filter id="elecGlow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feComposite in="blur" in2="blur" operator="over"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
     </filter>
-    <!-- Subtle outer glow for crown -->
-    <filter id="crownGlow">
-      <feGaussianBlur stdDeviation="2.5" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    <filter id="spark">
+      <feGaussianBlur stdDeviation="2"/>
     </filter>
   </defs>
 
-  <!-- ════════════ BACKGROUND ════════════ -->
-  <rect width="120" height="120" rx="26" fill="url(#bg)"/>
-  <!-- Outer border — single elegant stroke -->
-  <rect width="120" height="120" rx="26" fill="none" stroke="url(#ring)" stroke-width="0.7" opacity="0.18"/>
+  <!-- Background -->
+  <rect width="140" height="140" rx="24" fill="#050505"/>
 
-  <!-- ════════════ AMBIENT GLOW ════════════ -->
-  <ellipse cx="60" cy="50" rx="38" ry="40" fill="#D4A017" opacity="0.045" filter="url(#ambientGlow)"/>
+  <!-- Electric field haze -->
+  <circle cx="70" cy="75" r="52" fill="none" stroke="#D4A017" stroke-width="0.5" opacity="0.08"/>
+  <circle cx="70" cy="75" r="44" fill="none" stroke="#D4A017" stroke-width="0.3" opacity="0.05"/>
 
-  <!-- ════════════ DECORATIVE RINGS ════════════ -->
-  <circle cx="60" cy="52" r="48" fill="none" stroke="url(#ring)" stroke-width="1.3" opacity="0.1"/>
-  <circle cx="60" cy="52" r="45.5" fill="none" stroke="url(#ring)" stroke-width="0.35" opacity="0.06"/>
+  <!-- Outer triangle - thick -->
+  <polygon points="70,18 122,112 18,112" fill="none" stroke="url(#gold)" stroke-width="7" stroke-linejoin="round" stroke-linecap="round" filter="url(#glow)"/>
 
-  <!-- ════════════ BRAIN HEMISPHERES ════════════ -->
-  <g filter="url(#glow)">
-    <!-- Left hemisphere -->
-    <path d="M57,18 C37,16 14,32 14,52 C14,72 30,86 46,88 L56,82 L56,18 Z"
-          fill="url(#goldL)"/>
-    <!-- Right hemisphere -->
-    <path d="M63,18 C83,16 106,32 106,52 C106,72 90,86 74,88 L64,82 L64,18 Z"
-          fill="url(#goldR)"/>
-    <!-- Brain stem -->
-    <path d="M54,83 Q60,96 66,83" fill="none" stroke="url(#stem)" stroke-width="3.2" stroke-linecap="round"/>
-  </g>
+  <!-- Inner triangle -->
+  <polygon points="70,40 104,100 36,100" fill="none" stroke="url(#goldInner)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" opacity="0.35"/>
 
-  <!-- ════════════ SPECULAR HIGHLIGHTS (3D depth) ════════════ -->
-  <!-- Left hemisphere highlight -->
-  <path d="M57,19 C40,17 18,30 15,48 C15,48 18,28 38,20 C47,17 56,18 56,18 Z"
-        fill="url(#spec)"/>
-  <!-- Right hemisphere highlight (dimmer — further from light) -->
-  <path d="M63,19 C78,17 100,30 103,48 C103,48 100,28 82,20 C73,17 64,18 64,18 Z"
-        fill="url(#spec)" opacity="0.55"/>
+  <!-- Inner fill -->
+  <polygon points="70,58 90,90 50,90" fill="url(#gold)" opacity="0.08"/>
 
-  <!-- ════════════ SHADOW EDGES ════════════ -->
-  <path d="M14,56 C14,74 30,86 46,88 L42,84 C26,80 16,68 16,52 Z"
-        fill="url(#shd)"/>
-  <path d="M106,56 C106,74 90,86 74,88 L78,84 C94,80 104,68 104,52 Z"
-        fill="url(#shd)"/>
+  <!-- Electric arc - left side -->
+  <polyline points="38,100 42,88 36,78 44,68 40,56" fill="none" stroke="url(#elec)" stroke-width="1.5" stroke-linecap="round" filter="url(#elecGlow)" opacity="0.7"/>
 
-  <!-- ════════════ BRAIN FOLDS (Sulci) ════════════ -->
-  <!-- Left hemisphere folds -->
-  <g fill="none" stroke="#7A5A0A" stroke-linecap="round">
-    <path d="M18,38 C32,43 44,40 56,36" stroke-width="0.9" opacity="0.22"/>
-    <path d="M16,52 C32,56 44,54 56,50" stroke-width="0.85" opacity="0.18"/>
-    <path d="M18,66 C32,69 44,66 56,62" stroke-width="0.75" opacity="0.14"/>
-  </g>
-  <!-- Right hemisphere folds -->
-  <g fill="none" stroke="#6B4E08" stroke-linecap="round">
-    <path d="M102,38 C88,43 76,40 64,36" stroke-width="0.9" opacity="0.22"/>
-    <path d="M104,52 C88,56 76,54 64,50" stroke-width="0.85" opacity="0.18"/>
-    <path d="M102,66 C88,69 76,66 64,62" stroke-width="0.75" opacity="0.14"/>
-  </g>
+  <!-- Electric arc - right side -->
+  <polyline points="102,100 98,86 104,76 96,66 100,54" fill="none" stroke="url(#elec)" stroke-width="1.5" stroke-linecap="round" filter="url(#elecGlow)" opacity="0.7"/>
 
-  <!-- ════════════ CENTRAL FISSURE ════════════ -->
-  <path d="M60,18 C58,30 62,40 60,52 C58,64 62,74 60,82"
-        fill="none" stroke="#0a0a0a" stroke-width="1.1" opacity="0.3"/>
+  <!-- Electric arc - bottom -->
+  <polyline points="40,108 52,104 60,110 70,106 80,111 88,105 100,108" fill="none" stroke="url(#elec)" stroke-width="1.2" stroke-linecap="round" filter="url(#elecGlow)" opacity="0.5"/>
 
-  <!-- ════════════ CROWN DIAMOND ════════════ -->
-  <g filter="url(#crownGlow)">
-    <!-- Diamond body -->
-    <path d="M60,6 L65,13 L60,20 L55,13 Z" fill="url(#crown)"/>
-    <!-- Diamond highlight facet -->
-    <path d="M60,6 L62.5,10.5 L60,15 L57.5,10.5 Z" fill="#FFFDE7" opacity="0.55"/>
-  </g>
+  <!-- Lightning bolt - center -->
+  <polyline points="70,48 64,68 72,66 66,84" fill="none" stroke="#FFE066" stroke-width="2" stroke-linejoin="bevel" stroke-linecap="round" filter="url(#elecGlow)" opacity="0.9"/>
 
-  <!-- ════════════ NEURAL SPARKLE NODES ════════════ -->
-  <g fill="#FFE082">
-    <circle cx="28" cy="34" r="1.3" opacity="0.35"/>
-    <circle cx="92" cy="34" r="1.3" opacity="0.35"/>
-    <circle cx="18" cy="52" r="1.1" opacity="0.30"/>
-    <circle cx="102" cy="52" r="1.1" opacity="0.30"/>
-    <circle cx="28" cy="70" r="1.0" opacity="0.25"/>
-    <circle cx="92" cy="70" r="1.0" opacity="0.25"/>
-    <circle cx="42" cy="80" r="0.9" opacity="0.20"/>
-    <circle cx="78" cy="80" r="0.9" opacity="0.20"/>
-  </g>
+  <!-- Sparks -->
+  <circle cx="38" cy="78" r="2" fill="#FFE066" filter="url(#spark)" opacity="0.8"/>
+  <circle cx="102" cy="76" r="1.8" fill="#FFE066" filter="url(#spark)" opacity="0.75"/>
+  <circle cx="64" cy="68" r="1.5" fill="#FFF5CC" filter="url(#spark)" opacity="0.9"/>
+  <circle cx="44" cy="88" r="1.2" fill="#D4A017" filter="url(#spark)" opacity="0.6"/>
+  <circle cx="96" cy="86" r="1.3" fill="#D4A017" filter="url(#spark)" opacity="0.6"/>
+  <circle cx="52" cy="104" r="1" fill="#FFE066" filter="url(#spark)" opacity="0.5"/>
+  <circle cx="88" cy="105" r="1" fill="#FFE066" filter="url(#spark)" opacity="0.5"/>
 
-  <!-- ════════════ CENTER SPARK ════════════ -->
-  <circle cx="60" cy="50" r="2" fill="#FFE082" opacity="0.2"/>
-  <circle cx="60" cy="50" r="1" fill="#FFFDE7" opacity="0.4"/>
+  <!-- Tiny scatter sparks -->
+  <circle cx="30" cy="65" r="0.8" fill="#D4A017" opacity="0.4"/>
+  <circle cx="110" cy="62" r="0.7" fill="#D4A017" opacity="0.35"/>
+  <circle cx="48" cy="52" r="0.6" fill="#FFE066" opacity="0.3"/>
+  <circle cx="92" cy="50" r="0.6" fill="#FFE066" opacity="0.3"/>
+  <circle cx="70" cy="112" r="0.8" fill="#C5A55A" opacity="0.4"/>
+
+  <!-- Center energy dot -->
+  <circle cx="68" cy="74" r="4" fill="#D4A017" opacity="0.2"/>
+  <circle cx="68" cy="74" r="2.5" fill="#FFE066" filter="url(#elecGlow)" opacity="0.9"/>
 </svg>
